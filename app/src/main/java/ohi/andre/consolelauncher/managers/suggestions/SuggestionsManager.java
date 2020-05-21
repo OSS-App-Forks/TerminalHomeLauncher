@@ -564,7 +564,6 @@ public class SuggestionsManager {
         beforeLastSpace  = beforeLastSpace .trim();
         lastWord = lastWord.trim();
 
-        Log.e("VALUES", "'" + beforeLastSpace + "' '" + lastWord + "'");
 //        lastword = 0
         if (lastWord.length() == 0) {
 
