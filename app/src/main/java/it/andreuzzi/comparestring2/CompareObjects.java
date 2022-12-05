@@ -25,10 +25,13 @@
 
 package it.andreuzzi.comparestring2;
 
+import android.util.Log;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import it.andreuzzi.comparestring2.AlgMap.Alg;
 import it.andreuzzi.comparestring2.algs.interfaces.Algorithm;
+import ohi.andre.consolelauncher.managers.AppsManager;
 
 /**
  * 
@@ -70,7 +73,7 @@ public class CompareObjects {
             } else {
                 result = Utils.compare(ss1, st, algInstance, alg);
             }
-            
+
             toReturn[counter++] = new CompareItem(t, result);
         }
         
@@ -624,6 +627,54 @@ public class CompareObjects {
         CompareItem[] items = buildComparePack(s1,ss, size, splitters, algInstance, alg);
         int cutIndex = Utils.firstBeyondDeadline(items, deadline, Utils.biggerIsBetter(alg));
         return Utils.gather(clazz, items, Math.min(cutIndex, n));
+    }
+
+    public static AppsManager.LaunchInfo[] topAppMatchesWithDeadline(Class<AppsManager.LaunchInfo> clazz, String s1, int size, Iterable<AppsManager.LaunchInfo> ss, int n, float deadline, String[] splitters, Algorithm algInstance, Alg alg) {
+        CompareItem[] items = buildAppComparePack(s1,ss, size, splitters, algInstance, alg);
+        int cutIndex = Utils.firstBeyondDeadline(items, deadline, Utils.biggerIsBetter(alg));
+        return Utils.gather(clazz, items, Math.min(cutIndex, n));
+    }
+
+    private static CompareItem[] buildAppComparePack(String s1, Iterable<AppsManager.LaunchInfo> s2, int size, String[] splitters, Algorithm algInstance, Alg alg) {
+        final String ss1 = Utils.normalize(s1);
+
+        CompareItem[] toReturn = new CompareItem[size];
+        Iterator<AppsManager.LaunchInfo> it = s2.iterator();
+
+        int counter = 0;
+        float maxTimes = 1;
+        while(it.hasNext()) {
+            float result;
+
+            AppsManager.LaunchInfo t = it.next();
+            maxTimes = Math.max(maxTimes, t.launchedTimes);
+            String st = Utils.normalize(t.getLowercaseString());
+
+            if(splitters != null) {
+                result = Utils.checkSplits(ss1, st, splitters, algInstance, alg);
+            } else {
+                result = Utils.compare(ss1, st, algInstance, alg);
+            }
+            result += 0;
+
+            toReturn[counter++] = new CompareItem(t, result);
+        }
+        it = s2.iterator();
+        counter = 0;
+        float similarityWeight = 0.7f;
+        float launchWeight = 0.3f;
+        while (it.hasNext()) {
+            AppsManager.LaunchInfo t = it.next();
+            float launchValue = (t.launchedTimes / maxTimes) + 0.45f;
+            launchValue = Math.min(launchValue, 1);
+            toReturn[counter].r = toReturn[counter].r * similarityWeight + launchValue * launchWeight;
+            counter++;
+        }
+
+        comparator.biggerIsBetter = Utils.biggerIsBetter(alg);
+        Arrays.sort(toReturn, comparator);
+
+        return toReturn;
     }
     
 }
