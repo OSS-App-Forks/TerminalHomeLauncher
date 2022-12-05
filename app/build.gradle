@@ -1,16 +1,21 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 32
+    compileSdkVersion 27
 
     defaultConfig {
         applicationId "com.bencarlisle15.terminalhomelauncher"
 
         minSdkVersion 24
-        targetSdkVersion 32
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 27
         flavorDimensions "default"
 
         versionName "v6.17"
         versionCode 212
+
+//        renderscriptTargetApi 24
+//        renderscriptSupportModeEnabled true
+
     }
     buildTypes {
         release {
@@ -20,24 +25,26 @@ android {
             zipAlignEnabled true
         }
     }
-    productFlavors {
-        fdroid {
-        }
-        playstore {
-        }
-    }
+//    productFlavors {
+//
+//    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     dependencies {
-        implementation 'androidx.appcompat:appcompat:1.5.1'
-        implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+          //noinspection GradleCompatible
+          implementation 'com.android.support:appcompat-v7:27.1.1'
+//        implementation 'androidx.appcompat:appcompat:1.5.1'
+//        implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+//        implementation 'com.google.android.material:material:1.7.0'
+//        implementation 'io.alterac.blurkit:blurkit:1.1.0'
     }
     lint {
         checkReleaseBuilds false
     }
     namespace 'com.bencarlisle15.terminalhomelauncher'
+    buildToolsVersion '29.0.0'
     android.applicationVariants.all { variant ->
         def formattedDate = new Date().format('hh.mm')
 

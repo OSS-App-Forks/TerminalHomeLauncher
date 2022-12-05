@@ -4,11 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Parcelable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -380,9 +382,15 @@ public class MainManager {
 
     public boolean performLaunch(MainPack mainPack, AppsManager.LaunchInfo i, String input) {
         Intent intent = appsManager.getIntent(i);
-        if (intent == null) {
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setAction(Intent.ACTION_MAIN);
+        PackageManager intentpm = mContext.getPackageManager();
+        intentpm.queryIntentActivities(intent, 0);
+        if (intent.resolveActivity(mContext.getPackageManager()) == null) {
+            Log.e("WORKTEST", "Intent failed!");
             return false;
-        }
+        } else
+            Log.e("WORKTEST", "Intent Passed wtf!" + intent);
 
         if (showAppHistory) {
             if (appFormat == null) {

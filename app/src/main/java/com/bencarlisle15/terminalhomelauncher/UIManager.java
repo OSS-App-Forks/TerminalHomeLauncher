@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Shader;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
@@ -46,6 +47,7 @@ import android.widget.TextView;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.graphics.RenderEffect;
 import com.bencarlisle15.terminalhomelauncher.commands.main.MainPack;
 import com.bencarlisle15.terminalhomelauncher.commands.main.raw.Status;
 import com.bencarlisle15.terminalhomelauncher.commands.main.specific.RedirectCommand;
@@ -362,6 +364,10 @@ public class UIManager implements OnTouchListener {
         if (!XMLPrefsManager.getBoolean(Ui.system_wallpaper) || !canApplyTheme) {
             rootView.setBackgroundColor(XMLPrefsManager.getColor(Theme.bg_color));
         } else {
+//            TODO: Add blurr
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//                rootView.setRenderEffect(RenderEffect.createBlurEffect(10, 10, Shader.TileMode.CLAMP));
+//            }
             rootView.setBackgroundColor(XMLPrefsManager.getColor(Theme.overlay_color));
         }
 

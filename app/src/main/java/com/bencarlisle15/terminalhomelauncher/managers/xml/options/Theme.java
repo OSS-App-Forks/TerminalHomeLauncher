@@ -3,6 +3,9 @@ package com.bencarlisle15.terminalhomelauncher.managers.xml.options;
 import com.bencarlisle15.terminalhomelauncher.managers.xml.XMLPrefsManager;
 import com.bencarlisle15.terminalhomelauncher.managers.xml.classes.XMLPrefsElement;
 import com.bencarlisle15.terminalhomelauncher.managers.xml.classes.XMLPrefsSave;
+import com.google.android.material.R;
+import android.content.res.Resources;
+import android.util.Log;
 
 /**
  * Created by francescoandreuzzi on 24/09/2017.
