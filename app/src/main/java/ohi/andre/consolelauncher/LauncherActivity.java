@@ -21,6 +21,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -517,7 +518,7 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, @NonNull int[] grantResults) {
         if (permissions.length > 0 && permissions[0].equals(Manifest.permission.READ_CONTACTS) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(new Intent(ContactManager.ACTION_REFRESH));
         }
@@ -575,7 +576,10 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
                     break;
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
+        // Not sure if this should be at the top or bottom here!
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
