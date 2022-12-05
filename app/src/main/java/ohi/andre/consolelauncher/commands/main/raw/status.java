@@ -1,6 +1,7 @@
 package ohi.andre.consolelauncher.commands.main.raw;
 
 import android.bluetooth.BluetoothAdapter;
+import android.net.Network;
 import android.nfc.NfcAdapter;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -27,6 +28,30 @@ import static android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
  * Created by francescoandreuzzi on 05/04/16.
  */
 public class status implements CommandAbstraction {
+
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        for (Network network : connectivityManager.getAllNetworks()) {
+            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(network);
+            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI && networkInfo.isConnected()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isMobileDataConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        for (Network network : connectivityManager.getAllNetworks()) {
+            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(network);
+            if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE && networkInfo.isConnected()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public String exec(ExecutePack pack) {

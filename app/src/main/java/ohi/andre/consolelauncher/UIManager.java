@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.Gravity;
@@ -58,6 +59,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ohi.andre.consolelauncher.commands.main.MainPack;
+import ohi.andre.consolelauncher.commands.main.raw.status;
 import ohi.andre.consolelauncher.commands.main.specific.RedirectCommand;
 import ohi.andre.consolelauncher.managers.HTMLExtractManager;
 import ohi.andre.consolelauncher.managers.NotesManager;
@@ -1531,32 +1533,29 @@ public class UIManager implements OnTouchListener {
                 }
             }
 
-//            wifi
-            boolean wifiOn = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected();
+            // wifi
+            boolean wifiOn = status.isWifiConnected(mContext);
+
             String wifiName = null;
             if (wifiOn) {
-                WifiInfo connectionInfo = wifiManager.getConnectionInfo();
-                if (connectionInfo != null) {
-                    wifiName = connectionInfo.getSSID();
-                }
+                WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                WifiInfo info = wifiManager.getConnectionInfo();
+                wifiName = info.getSSID();
             }
 
-//            mobile data
-            boolean mobileOn = false;
-            try {
-                mobileOn = method != null && connectivityManager != null && (Boolean) method.invoke(connectivityManager);
-            } catch (Exception e) {
-            }
+            // mobile data
+            boolean mobileOn = status.isMobileDataConnected(mContext);
 
-            String mobileType = null;
+            String mobileType;
             if (mobileOn) {
                 mobileType = Tuils.getNetworkType(mContext);
             } else {
                 mobileType = "unknown";
             }
 
-//            bluetooth
+            // bluetooth
             boolean bluetoothOn = mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
+
             // nfc
             boolean nfcOn = mNfcAdapter != null && mNfcAdapter.isEnabled();
 
