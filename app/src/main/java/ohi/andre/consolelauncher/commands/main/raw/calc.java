@@ -24,7 +24,7 @@ public class calc extends PermanentSuggestionCommand {
 
     @Override
     public int[] argType() {
-        return new int[] {CommandAbstraction.PLAIN_TEXT};
+        return new int[]{CommandAbstraction.PLAIN_TEXT};
     }
 
     @Override
@@ -50,6 +50,6 @@ public class calc extends PermanentSuggestionCommand {
 
     @Override
     public String[] permanentSuggestions() {
-        return new String[] {"(", ")", "+", "-", "*", "/", "%", "^", "sqrt"};
+        return new String[]{"(", ")", "+", "-", "*", "/", "%", "^", "sqrt"};
     }
 }

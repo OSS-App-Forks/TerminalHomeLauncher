@@ -1,6 +1,7 @@
 package ohi.andre.consolelauncher.commands.main.raw;
 
 import android.content.Intent;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import ohi.andre.consolelauncher.R;
@@ -17,12 +18,37 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 
 public class theme extends ParamCommand {
 
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
+    @Override
+    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    public int priority() {
+        return 4;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_theme;
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        return null;
+    }
+
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
 
         apply {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -36,7 +62,7 @@ public class theme extends ParamCommand {
         standard {
             @Override
             public int[] args() {
-                return new int[] {};
+                return new int[]{};
             }
 
             @Override
@@ -113,30 +139,5 @@ public class theme extends ParamCommand {
         public int[] args() {
             return new int[0];
         }
-    }
-
-    @Override
-    public String[] params() {
-        return Param.labels();
-    }
-
-    @Override
-    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    public int priority() {
-        return 4;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_theme;
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        return null;
     }
 }

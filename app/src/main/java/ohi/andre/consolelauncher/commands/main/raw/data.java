@@ -29,7 +29,8 @@ public class data implements APICommand, CommandAbstraction {
         if (info.connectivityMgr == null) {
             try {
                 init(info);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
 
         boolean mobileConnected;

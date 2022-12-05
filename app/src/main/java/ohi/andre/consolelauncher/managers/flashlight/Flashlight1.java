@@ -45,7 +45,8 @@ public class Flashlight1 extends Flashlight {
                     try {
                         this.mCamera.release();
                         this.mCamera = null;
-                    } catch (Exception ex) {}
+                    } catch (Exception ex) {
+                    }
                 }
 
                 Intent intent = new Intent(PrivateIOReceiver.ACTION_OUTPUT);
@@ -58,7 +59,7 @@ public class Flashlight1 extends Flashlight {
     @Override
     protected void turnOff() {
         if (this.getStatus() && this.mCamera != null) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 this.mCamera.stopPreview();
                 this.mCamera.release();
                 this.mCamera = null;

@@ -22,7 +22,7 @@ public class time implements CommandAbstraction {
 
     @Override
     public int[] argType() {
-        return new int[] {CommandAbstraction.INT};
+        return new int[]{CommandAbstraction.INT};
     }
 
     @Override

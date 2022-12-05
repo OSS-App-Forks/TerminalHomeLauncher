@@ -1,20 +1,20 @@
 /*
  * =============================================================================
- * 
+ *
  *   Copyright (c) 2014-2017, The UNBESCAPE team (http://www.unbescape.org)
- * 
+ *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
- * 
+ *
  * =============================================================================
  */
 package ohi.andre.consolelauncher.tuils.html_escape;
@@ -29,19 +29,17 @@ import java.util.Map;
 
 /**
  * <p>
- *   Instances of this class group all the complex data structures needed to support full escape and unescape
- *   operations for HTML.
+ * Instances of this class group all the complex data structures needed to support full escape and unescape
+ * operations for HTML.
  * </p>
  * <p>
- *   Most of the fields in objects of this class are package-accessible, as the class itself is, in order to allow
- *   them (the fields) to be directly accessed from the classes doing the real escape/unescape (basically,
- *   the {@link HtmlEscapeUtil} class.
+ * Most of the fields in objects of this class are package-accessible, as the class itself is, in order to allow
+ * them (the fields) to be directly accessed from the classes doing the real escape/unescape (basically,
+ * the {@link HtmlEscapeUtil} class.
  * </p>
- * 
- * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0.0
  *
+ * @author Daniel Fern&aacute;ndez
+ * @since 1.0.0
  */
 final class HtmlEscapeSymbols {
 
@@ -70,8 +68,6 @@ final class HtmlEscapeSymbols {
      */
 
 
-
-
     /*
      * Length of the array used for holding the 'base' NCRS indexed by the codepoints themselves. This size
      * (0x2fff - 12287) is considered enough to hold most of the NCRS that should be needed (HTML4 has 252
@@ -80,6 +76,28 @@ final class HtmlEscapeSymbols {
      * those 138 cases).
      */
     static final int NCRS_BY_CODEPOINT_LEN = 0x2fff;
+    /*
+     * Maximum char value inside the ASCII plane
+     */
+    static final char MAX_ASCII_CHAR = 0x7f;
+    /*
+     * This constant will be used at the NCRS_BY_CODEPOINT array to specify there is no NCR associated with a
+     * codepoint.
+     */
+    static final short NO_NCR = (short) 0;
+    /*
+     * Constants holding the definition of all the HtmlEscapeSymbols for HTML4 and HTML5, to be used in escape and
+     * unescape operations.
+     */
+    static final HtmlEscapeSymbols HTML4_SYMBOLS;
+    static final HtmlEscapeSymbols HTML5_SYMBOLS;
+
+    static {
+
+        HTML4_SYMBOLS = Html4EscapeSymbolsInitializer.initializeHtml4();
+        HTML5_SYMBOLS = Html5EscapeSymbolsInitializer.initializeHtml5();
+
+    }
 
     /*
      * This array will contain the NCRs for the first NCRS_BY_CODEPOINT_LEN (0x2fff) codepoints, indexed by
@@ -94,7 +112,6 @@ final class HtmlEscapeSymbols {
      * - Approximate size will be 16 (header) + 12287 * 2 = 24590 bytes.
      */
     final short[] NCRS_BY_CODEPOINT = new short[NCRS_BY_CODEPOINT_LEN];
-
     /*
      * This map will work as an overflow of the NCRS_BY_CODEPOINT array, so that the codepoint-to-NCR relation is
      * stored here (with hash-based access) for codepoints >= NCRS_BY_CODEPOINT_LEN (0x2fff).
@@ -104,13 +121,7 @@ final class HtmlEscapeSymbols {
      * - Approximate max size will be (being a complex object like a Map, it's a rough approximation):
      *   16 (header) + 138 * (16 (entry header) + 16*2 (key, value headers) + 4 (key) + 2 (value)) = 7468 bytes
      */
-    final Map<Integer,Short> NCRS_BY_CODEPOINT_OVERFLOW;// No need to instantiate it until we know it's needed
-
-    /*
-     * Maximum char value inside the ASCII plane
-     */
-    static final char MAX_ASCII_CHAR = 0x7f;
-
+    final Map<Integer, Short> NCRS_BY_CODEPOINT_OVERFLOW;// No need to instantiate it until we know it's needed
     /*
      * This array will hold the 'escape level' assigned to each ASCII character (codepoint), 0x0 to 0x7f and also
      * a level for the rest of non-ASCII characters.
@@ -121,7 +132,6 @@ final class HtmlEscapeSymbols {
      *   all non-ASCII characters have to be escaped or not.
      */
     final byte[] ESCAPE_LEVELS = new byte[MAX_ASCII_CHAR + 2];
-
     /*
      * This array will contain all the NCRs, alphabetically ordered.
      * - Positions in this array will correspond to positions in the SORTED_CODEPOINTS array, so that one array
@@ -136,7 +146,6 @@ final class HtmlEscapeSymbols {
      * - Max size in real world, when populated for HTML5: 2125 NCRs * 4 bytes/objref -> 8500 bytes, plus the texts.
      */
     final char[][] SORTED_NCRS;
-
     /*
      * This array contains all the codepoints corresponding to the NCRs stored in SORTED_NCRS. This array is ordered
      * so that each index in SORTED_NCRS can also be used to retrieve the corresponding CODEPOINT when used on this array.
@@ -145,8 +154,6 @@ final class HtmlEscapeSymbols {
      * - Max size in real world, when populated for HTML5: 2125 NCRs * 4 bytes/objref -> 8500 bytes.
      */
     final int[] SORTED_CODEPOINTS;
-
-
     /*
      * This array stores the sequences of two codepoints that are escaped as a single NCR. The indexes of this array are
      * referenced as negative numbers at the SORTED_CODEPOINTS array, and the values are int[2], containing the
@@ -156,36 +163,6 @@ final class HtmlEscapeSymbols {
      * - Max size in real world, when populated for HTML5 (rough approximate): 93 * (4 (ref) + 16 + 2 * 4) = 2604 bytes
      */
     final int[][] DOUBLE_CODEPOINTS;
-
-
-    /*
-     * This constant will be used at the NCRS_BY_CODEPOINT array to specify there is no NCR associated with a
-     * codepoint.
-     */
-    static final short NO_NCR = (short) 0;
-
-
-
-
-    /*
-     * Constants holding the definition of all the HtmlEscapeSymbols for HTML4 and HTML5, to be used in escape and
-     * unescape operations.
-     */
-    static final HtmlEscapeSymbols HTML4_SYMBOLS;
-    static final HtmlEscapeSymbols HTML5_SYMBOLS;
-
-
-
-
-    static {
-
-        HTML4_SYMBOLS = Html4EscapeSymbolsInitializer.initializeHtml4();
-        HTML5_SYMBOLS = Html5EscapeSymbolsInitializer.initializeHtml5();
-
-    }
-
-
-
 
 
     /*
@@ -204,7 +181,7 @@ final class HtmlEscapeSymbols {
         final List<char[]> ncrs = new ArrayList<>(references.references.size() + 5);
         final List<Integer> codepoints = new ArrayList<>(references.references.size() + 5);
         final List<int[]> doubleCodepoints = new ArrayList<>(100);
-        final Map<Integer,Short> ncrsByCodepointOverflow = new HashMap<>(20);
+        final Map<Integer, Short> ncrsByCodepointOverflow = new HashMap<>(20);
 
         // For each reference, initialize its corresponding codepoint -> ncr and ncr -> codepoint structures
         for (final Reference reference : references.references) {
@@ -256,9 +233,9 @@ final class HtmlEscapeSymbols {
             final char[] ncr = ncrsOrdered.get(i);
             SORTED_NCRS[i] = ncr;
 
-            for (short j = 0; j  < SORTED_NCRS.length; j++) {
+            for (short j = 0; j < SORTED_NCRS.length; j++) {
 
-                if (Arrays.equals(ncr,ncrs.get(j))) {
+                if (Arrays.equals(ncr, ncrs.get(j))) {
 
                     final int cp = codepoints.get(j);
                     SORTED_CODEPOINTS[i] = cp;
@@ -383,7 +360,7 @@ final class HtmlEscapeSymbols {
                 return 1;
             }
             // We have a partial match. Can be an NCR not finishing in a semicolon
-            return - ((textLen - i) + 10);
+            return -((textLen - i) + 10);
         }
         return 0;
     }
@@ -418,7 +395,7 @@ final class HtmlEscapeSymbols {
                 return 1;
             }
             // We have a partial match. Can be an NCR not finishing in a semicolon
-            return - ((textLen - i) + 10);
+            return -((textLen - i) + 10);
         }
         return 0;
     }
@@ -544,7 +521,7 @@ final class HtmlEscapeSymbols {
         }
 
         void addReference(final int codepoint0, final int codepoint1, final String ncr) {
-            this.references.add(new Reference(ncr, new int[] { codepoint0, codepoint1 }));
+            this.references.add(new Reference(ncr, new int[]{codepoint0, codepoint1}));
         }
 
     }
@@ -562,7 +539,6 @@ final class HtmlEscapeSymbols {
         }
 
     }
-
 
 
 }

@@ -35,12 +35,37 @@ import static ohi.andre.consolelauncher.UIManager.PREFS_NAME;
 
 public class config extends ParamCommand {
 
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
+    @Override
+    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        return null;
+    }
+
+    @Override
+    public int priority() {
+        return 4;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_config;
+    }
+
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
 
         set {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONFIG_ENTRY, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.CONFIG_ENTRY, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -51,9 +76,9 @@ public class config extends ParamCommand {
 
                 ((Reloadable) pack.context).addMessage(save.parent().path(), save.label() + " -> " + value);
 
-                if(save.label().startsWith("default_app_n")) {
+                if (save.label().startsWith("default_app_n")) {
                     return pack.context.getString(R.string.output_usedefapp);
-                } else if(save == Behavior.unlock_counter_cycle_start) {
+                } else if (save == Behavior.unlock_counter_cycle_start) {
                     SharedPreferences preferences = pack.context.getSharedPreferences(PREFS_NAME, 0);
                     preferences.edit()
                             .putLong(UIManager.NEXT_UNLOCK_CYCLE_RESTART, 0)
@@ -66,14 +91,14 @@ public class config extends ParamCommand {
 
             @Override
             public String onNotArgEnough(ExecutePack pack, int n) {
-                pack.args = new Object[] {pack.args[1], Tuils.EMPTYSTRING};
+                pack.args = new Object[]{pack.args[1], Tuils.EMPTYSTRING};
                 return set.exec(pack);
             }
         },
         info {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONFIG_ENTRY};
+                return new int[]{CommandAbstraction.CONFIG_ENTRY};
             }
 
             @Override
@@ -88,7 +113,7 @@ public class config extends ParamCommand {
         file {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONFIG_FILE};
+                return new int[]{CommandAbstraction.CONFIG_FILE};
             }
 
             @Override
@@ -116,7 +141,7 @@ public class config extends ParamCommand {
         append {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONFIG_ENTRY, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.CONFIG_ENTRY, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -133,14 +158,14 @@ public class config extends ParamCommand {
 
             @Override
             public String onNotArgEnough(ExecutePack pack, int n) {
-                pack.args = new Object[] {pack.args[0], pack.args[1], Tuils.EMPTYSTRING};
+                pack.args = new Object[]{pack.args[0], pack.args[1], Tuils.EMPTYSTRING};
                 return set.exec(pack);
             }
         },
         erase {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONFIG_ENTRY};
+                return new int[]{CommandAbstraction.CONFIG_ENTRY};
             }
 
             @Override
@@ -156,21 +181,21 @@ public class config extends ParamCommand {
         get {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONFIG_ENTRY};
+                return new int[]{CommandAbstraction.CONFIG_ENTRY};
             }
 
             @Override
             public String exec(ExecutePack pack) {
                 XMLPrefsSave save = pack.getPrefsSave();
                 String s = XMLPrefsManager.get(String.class, save);
-                if(s.length() == 0) return "\"\"";
+                if (s.length() == 0) return "\"\"";
                 return s;
             }
         },
         ls {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONFIG_FILE};
+                return new int[]{CommandAbstraction.CONFIG_FILE};
             }
 
             @Override
@@ -178,8 +203,8 @@ public class config extends ParamCommand {
                 File file = new File(Tuils.getFolder(), pack.getString());
                 String name = file.getName();
 
-                for(XMLPrefsManager.XMLPrefsRoot r : XMLPrefsManager.XMLPrefsRoot.values()) {
-                    if(name.equalsIgnoreCase(r.path)) {
+                for (XMLPrefsManager.XMLPrefsRoot r : XMLPrefsManager.XMLPrefsRoot.values()) {
+                    if (name.equalsIgnoreCase(r.path)) {
                         List<String> strings = r.getValues().values();
                         Tuils.addPrefix(strings, Tuils.DOUBLE_SPACE);
                         strings.add(0, r.path);
@@ -187,21 +212,21 @@ public class config extends ParamCommand {
                     }
                 }
 
-                if(name.equalsIgnoreCase(AppsManager.PATH)) {
+                if (name.equalsIgnoreCase(AppsManager.PATH)) {
                     List<String> strings = AppsManager.instance.getValues().values();
                     Tuils.addPrefix(strings, Tuils.DOUBLE_SPACE);
                     strings.add(0, AppsManager.PATH);
                     return Tuils.toPlanString(strings, Tuils.NEWLINE);
                 }
 
-                if(name.equalsIgnoreCase(NotificationManager.PATH)) {
+                if (name.equalsIgnoreCase(NotificationManager.PATH)) {
                     List<String> strings = NotificationManager.instance.getValues().values();
                     Tuils.addPrefix(strings, Tuils.DOUBLE_SPACE);
                     strings.add(0, NotificationManager.PATH);
                     return Tuils.toPlanString(strings, Tuils.NEWLINE);
                 }
 
-                if(name.equalsIgnoreCase(RssManager.PATH)) {
+                if (name.equalsIgnoreCase(RssManager.PATH)) {
                     List<String> strings = NotificationManager.instance.getValues().values();
                     Tuils.addPrefix(strings, Tuils.DOUBLE_SPACE);
                     strings.add(0, RssManager.PATH);
@@ -220,22 +245,22 @@ public class config extends ParamCommand {
             public String onNotArgEnough(ExecutePack pack, int n) {
                 List<String> ss = new ArrayList<>();
 
-                for(XMLPrefsManager.XMLPrefsRoot element : XMLPrefsManager.XMLPrefsRoot.values()) {
+                for (XMLPrefsManager.XMLPrefsRoot element : XMLPrefsManager.XMLPrefsRoot.values()) {
                     ss.add(element.path);
-                    for(XMLPrefsSave save : element.enums) {
+                    for (XMLPrefsSave save : element.enums) {
                         ss.add(Tuils.DOUBLE_SPACE + save.label());
                     }
                 }
                 ss.add(AppsManager.PATH);
-                for(XMLPrefsSave save : Apps.values()) {
+                for (XMLPrefsSave save : Apps.values()) {
                     ss.add(Tuils.DOUBLE_SPACE + save.label());
                 }
                 ss.add(NotificationManager.PATH);
-                for(XMLPrefsSave save : Notifications.values()) {
+                for (XMLPrefsSave save : Notifications.values()) {
                     ss.add(Tuils.DOUBLE_SPACE + save.label());
                 }
                 ss.add(RssManager.PATH);
-                for(XMLPrefsSave save : Rss.values()) {
+                for (XMLPrefsSave save : Rss.values()) {
                     ss.add(Tuils.DOUBLE_SPACE + save.label());
                 }
 
@@ -245,7 +270,7 @@ public class config extends ParamCommand {
         fontsize {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
 
             @Override
@@ -271,7 +296,7 @@ public class config extends ParamCommand {
         reset {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONFIG_ENTRY};
+                return new int[]{CommandAbstraction.CONFIG_ENTRY};
             }
 
             @Override
@@ -287,16 +312,16 @@ public class config extends ParamCommand {
         apply {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.FILE};
+                return new int[]{CommandAbstraction.FILE};
             }
 
             @Override
             public String exec(ExecutePack pack) {
                 File file = pack.get(File.class);
 
-                if(!file.getName().endsWith(".xml")) {
+                if (!file.getName().endsWith(".xml")) {
 //                    is font
-                    if(Tuils.fontPath != null) {
+                    if (Tuils.fontPath != null) {
                         File font = new File(Tuils.fontPath);
                         if (font.exists()) {
                             File[] files = font.listFiles();
@@ -362,30 +387,5 @@ public class config extends ParamCommand {
         public String onArgNotFound(ExecutePack pack, int index) {
             return pack.context.getString(R.string.output_invalidarg);
         }
-    }
-
-    @Override
-    public String[] params() {
-        return Param.labels();
-    }
-
-    @Override
-    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        return null;
-    }
-
-    @Override
-    public int priority() {
-        return 4;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_config;
     }
 }

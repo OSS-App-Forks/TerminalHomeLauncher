@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.BufferedReader;
@@ -28,26 +29,24 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 
 public class AliasManager {
 
+    public static final String PATH = "alias.txt";
     public static String ACTION_LS = BuildConfig.APPLICATION_ID + ".alias_ls";
     public static String ACTION_ADD = BuildConfig.APPLICATION_ID + ".alias_add";
     public static String ACTION_RM = BuildConfig.APPLICATION_ID + ".alias_rm";
-
     public static String NAME = "name";
-
-    public static final String PATH = "alias.txt";
-
-    private List<Alias> aliases;
     private final String paramSeparator;
     private final String aliasLabelFormat;
     private final boolean replaceAllMarkers;
-
     private final Context context;
-
     private final String paramMarker;
     private final Pattern parameterPattern;
-
     private final BroadcastReceiver receiver;
-
+    //    this prevents some errors related to the % sign
+    private final String SECURITY_REPLACEMENT = "{#@";
+    private final Pattern securityPattern = Pattern.compile(Pattern.quote(SECURITY_REPLACEMENT));
+    private final Pattern pv = Pattern.compile("%v", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
+    private final Pattern pa = Pattern.compile("%a", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
+    private List<Alias> aliases;
     public AliasManager(Context c) {
         this.context = c;
 
@@ -61,11 +60,11 @@ public class AliasManager {
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
 
-                if(action.equals(ACTION_ADD)) {
+                if (action.equals(ACTION_ADD)) {
                     add(context, intent.getStringExtra(NAME), intent.getStringExtra(XMLPrefsManager.VALUE_ATTRIBUTE));
-                } else if(action.equals(ACTION_RM)) {
+                } else if (action.equals(ACTION_RM)) {
                     remove(context, intent.getStringExtra(NAME));
-                } else if(action.equals(ACTION_LS)) {
+                } else if (action.equals(ACTION_LS)) {
                     Tuils.sendOutput(context, printAliases());
                 }
             }
@@ -89,40 +88,36 @@ public class AliasManager {
         return output.trim();
     }
 
-//    [0] = aliasValue
+    //    [0] = aliasValue
 //    [1] = aliasName
 //    [2] = residualString
     public String[] getAlias(String alias, boolean supportSpaces) {
-        if(supportSpaces) {
+        if (supportSpaces) {
             String args = Tuils.EMPTYSTRING;
 
             String aliasValue = null;
             while (true) {
                 aliasValue = getALias(alias);
-                if(aliasValue != null) break;
+                if (aliasValue != null) break;
                 else {
                     int index = alias.lastIndexOf(Tuils.SPACE);
-                    if(index == -1) return new String[] {null, null, alias};
+                    if (index == -1) return new String[]{null, null, alias};
 
                     args = alias.substring(index + 1) + Tuils.SPACE + args;
                     args = args.trim();
-                    alias = alias.substring(0,index);
+                    alias = alias.substring(0, index);
                 }
             }
 
-            return new String[] {aliasValue, alias, args};
+            return new String[]{aliasValue, alias, args};
         } else {
-            return new String[] {getALias(alias), alias, Tuils.EMPTYSTRING};
+            return new String[]{getALias(alias), alias, Tuils.EMPTYSTRING};
         }
     }
 
-//    this prevents some errors related to the % sign
-    private final String SECURITY_REPLACEMENT = "{#@";
-    private final Pattern securityPattern = Pattern.compile(Pattern.quote(SECURITY_REPLACEMENT));
-
     public String format(String aliasValue, String params) {
         params = params.trim();
-        if(params.length() == 0) return aliasValue;
+        if (params.length() == 0) return aliasValue;
 
         int before = aliasValue.length();
         aliasValue = parameterPattern.matcher(aliasValue).replaceAll(SECURITY_REPLACEMENT);
@@ -130,27 +125,28 @@ public class AliasManager {
 
         String[] split = params.split(Pattern.quote(paramSeparator), replaced);
 
-        for(String s : split) {
+        for (String s : split) {
             aliasValue = securityPattern.matcher(aliasValue).replaceFirst(s);
         }
 
-        if(replaceAllMarkers) aliasValue = securityPattern.matcher(aliasValue).replaceAll(split[0]);
+        if (replaceAllMarkers)
+            aliasValue = securityPattern.matcher(aliasValue).replaceAll(split[0]);
 
         return aliasValue;
     }
 
     private String getALias(String name) {
-        for(Alias a : aliases) {
-            if(name.equals(a.name)) return a.value;
+        for (Alias a : aliases) {
+            if (name.equals(a.name)) return a.value;
         }
 
         return null;
     }
 
     private boolean removeAlias(String name) {
-        for(int c = 0; c < aliases.size(); c++) {
+        for (int c = 0; c < aliases.size(); c++) {
             Alias a = aliases.get(c);
-            if(name.equals(a.name)) {
+            if (name.equals(a.name)) {
                 aliases.remove(c);
                 return true;
             }
@@ -159,8 +155,6 @@ public class AliasManager {
         return false;
     }
 
-    private final Pattern pv = Pattern.compile("%v", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
-    private final Pattern pa = Pattern.compile("%a", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
     public String formatLabel(String aliasName, String aliasValue) {
         String a = aliasLabelFormat;
         a = Tuils.patternNewline.matcher(a).replaceAll(Matcher.quoteReplacement(Tuils.NEWLINE));
@@ -170,39 +164,39 @@ public class AliasManager {
     }
 
     public void reload() {
-        if(aliases != null) aliases.clear();
+        if (aliases != null) aliases.clear();
         else aliases = new ArrayList<>();
 
         File root = Tuils.getFolder();
-        if(root == null) return;
+        if (root == null) return;
 
         File file = new File(root, PATH);
 
         try {
-            if(!file.exists()) file.createNewFile();
+            if (!file.exists()) file.createNewFile();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 
             String line;
-            while((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 String[] splatted = line.split("=");
-                if(splatted.length < 2) continue;
+                if (splatted.length < 2) continue;
 
                 String name, value = Tuils.EMPTYSTRING;
                 name = splatted[0];
 
-                for(int c = 1; c < splatted.length; c++) {
+                for (int c = 1; c < splatted.length; c++) {
                     value += splatted[c];
-                    if(c != splatted.length - 1) value += "=";
+                    if (c != splatted.length - 1) value += "=";
                 }
 
                 name = name.trim();
                 value = value.trim();
 
-                if(name.equalsIgnoreCase(value)) {
+                if (name.equalsIgnoreCase(value)) {
                     Tuils.sendOutput(Color.RED, context,
                             context.getString(R.string.output_notaddingalias1) + Tuils.SPACE + name + Tuils.SPACE + context.getString(R.string.output_notaddingalias2));
-                } else if(value.startsWith(name + Tuils.SPACE)) {
+                } else if (value.startsWith(name + Tuils.SPACE)) {
                     Tuils.sendOutput(Color.RED, context,
                             context.getString(R.string.output_notaddingalias1) + Tuils.SPACE + name + Tuils.SPACE + context.getString(R.string.output_notaddingalias3));
                 } else {
@@ -219,8 +213,8 @@ public class AliasManager {
     }
 
     public void add(Context context, String name, String value) {
-        for(Alias a : aliases) {
-            if(name.equals(a.name)) {
+        for (Alias a : aliases) {
+            if (name.equals(a.name)) {
                 Tuils.sendOutput(context, R.string.unavailable_name);
                 return;
             }
@@ -242,7 +236,7 @@ public class AliasManager {
     public void remove(Context context, String name) {
         reload();
 
-        if(!removeAlias(name)) {
+        if (!removeAlias(name)) {
             Tuils.sendOutput(context, R.string.invalid_name);
             return;
         }
@@ -256,8 +250,8 @@ public class AliasManager {
 
             String prefix = name + "=";
             String line;
-            while((line = reader.readLine()) != null) {
-                if(line.startsWith(prefix)) continue;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith(prefix)) continue;
                 writer.write(line + Tuils.NEWLINE);
             }
             writer.close();
@@ -271,9 +265,9 @@ public class AliasManager {
 
     public List<Alias> getAliases(boolean excludeEmtpy) {
         List<Alias> l = new ArrayList<>(aliases);
-        if(excludeEmtpy) {
-            for(int c = 0; c < l.size(); c++) {
-                if(l.get(c).name.length() == 0) {
+        if (excludeEmtpy) {
+            for (int c = 0; c < l.size(); c++) {
+                if (l.get(c).name.length() == 0) {
                     l.remove(c);
                     break;
                 }

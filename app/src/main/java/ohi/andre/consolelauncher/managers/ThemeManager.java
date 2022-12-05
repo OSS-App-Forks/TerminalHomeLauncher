@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
@@ -39,20 +40,21 @@ public class ThemeManager {
     Reloadable reloadable;
 
     Pattern parser = Pattern.compile("(<SUGGESTIONS>.+<\\/SUGGESTIONS>).*(<THEME>.+<\\/THEME>)", Pattern.DOTALL);
-
+    //    rgba(255,87,34,1)
+    Pattern colorParser = Pattern.compile("rgba\\([\\s]*(\\d+),[\\s]*(\\d+),[\\s]*(\\d+),[\\s]*(\\d.*\\d*)[\\s]*\\)");
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(ACTION_APPLY)) {
+            if (intent.getAction().equals(ACTION_APPLY)) {
                 String name = intent.getStringExtra(NAME);
-                if(name == null) return;
+                if (name == null) return;
 
 //                name needs to be the absolute path
-                if(name.endsWith(".zip")) apply(new File(name));
+                if (name.endsWith(".zip")) apply(new File(name));
                 else apply(name);
-            } else if(intent.getAction().equals(ACTION_REVERT)) {
+            } else if (intent.getAction().equals(ACTION_REVERT)) {
                 revert();
-            } else if(intent.getAction().equals(ACTION_STANDARD)) {
+            } else if (intent.getAction().equals(ACTION_STANDARD)) {
                 standard();
             }
         }
@@ -81,7 +83,7 @@ public class ThemeManager {
             public void run() {
                 super.run();
 
-                if(!Tuils.hasInternetAccess()) {
+                if (!Tuils.hasInternetAccess()) {
                     Tuils.sendOutput(Color.RED, context, R.string.no_internet);
                     return;
                 }
@@ -100,7 +102,7 @@ public class ThemeManager {
                     return;
                 }
 
-                if(response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     String string;
                     try {
                         string = response.body().string();
@@ -108,13 +110,13 @@ public class ThemeManager {
                         string = Tuils.EMPTYSTRING;
                     }
 
-                    if(string.length() == 0) {
+                    if (string.length() == 0) {
                         Tuils.sendOutput(context, R.string.theme_not_found);
                         return;
                     }
 
                     Matcher m = parser.matcher(string);
-                    if(m.find()) {
+                    if (m.find()) {
                         String suggestions = m.group(1);
                         String theme = m.group(2);
 
@@ -129,18 +131,18 @@ public class ThemeManager {
     }
 
     public void apply(File zip) {
-        
+
     }
 
     private void applyTheme(File theme, File suggestions, boolean keepOld) {
-        if(theme == null || suggestions == null) {
+        if (theme == null || suggestions == null) {
             Tuils.sendOutput(context, R.string.theme_unable);
             return;
         }
 
         File oldTheme = new File(Tuils.getFolder(), XMLPrefsManager.XMLPrefsRoot.THEME.path);
         File oldSuggestions = new File(Tuils.getFolder(), XMLPrefsManager.XMLPrefsRoot.SUGGESTIONS.path);
-        if(keepOld) {
+        if (keepOld) {
             Tuils.insertOld(oldTheme);
             Tuils.insertOld(oldSuggestions);
         }
@@ -152,24 +154,24 @@ public class ThemeManager {
     }
 
     private void applyTheme(String theme, String suggestions, boolean keepOld, String themeName) {
-        if(theme == null || suggestions == null) {
+        if (theme == null || suggestions == null) {
             Tuils.sendOutput(context, R.string.theme_unable);
             return;
         }
 
         Matcher colorMatcher = colorParser.matcher(theme);
-        while(colorMatcher.find()) {
+        while (colorMatcher.find()) {
             theme = Pattern.compile(Pattern.quote(colorMatcher.group())).matcher(theme).replaceAll(toHexColor(colorMatcher.group()));
         }
 
         colorMatcher = colorParser.matcher(suggestions);
-        while(colorMatcher.find()) {
+        while (colorMatcher.find()) {
             suggestions = Pattern.compile(Pattern.quote(colorMatcher.group())).matcher(suggestions).replaceAll(toHexColor(colorMatcher.group()));
         }
 
         File oldTheme = new File(Tuils.getFolder(), XMLPrefsManager.XMLPrefsRoot.THEME.path);
         File oldSuggestions = new File(Tuils.getFolder(), XMLPrefsManager.XMLPrefsRoot.SUGGESTIONS.path);
-        if(keepOld) {
+        if (keepOld) {
             Tuils.insertOld(oldTheme);
             Tuils.insertOld(oldSuggestions);
         }
@@ -210,27 +212,25 @@ public class ThemeManager {
         reloadable.addMessage(context.getString(R.string.theme_applied) + Tuils.SPACE + "standard", null);
     }
 
-//    rgba(255,87,34,1)
-    Pattern colorParser = Pattern.compile("rgba\\([\\s]*(\\d+),[\\s]*(\\d+),[\\s]*(\\d+),[\\s]*(\\d.*\\d*)[\\s]*\\)");
     private String toHexColor(String color) {
         Matcher m = colorParser.matcher(color);
-        if(m.find()) {
+        if (m.find()) {
             int red = Integer.parseInt(m.group(1));
             int green = Integer.parseInt(m.group(2));
             int blue = Integer.parseInt(m.group(3));
             float alpha = Float.parseFloat(m.group(4));
 
             String redHex = Integer.toHexString(red);
-            if(redHex.length() == 1) redHex = "0" + redHex;
+            if (redHex.length() == 1) redHex = "0" + redHex;
 
             String greenHex = Integer.toHexString(green);
-            if(greenHex.length() == 1) greenHex = "0" + greenHex;
+            if (greenHex.length() == 1) greenHex = "0" + greenHex;
 
             String blueHex = Integer.toHexString(blue);
-            if(blueHex.length() == 1) blueHex = "0" + blueHex;
+            if (blueHex.length() == 1) blueHex = "0" + blueHex;
 
             String alphaHex = Integer.toHexString((int) alpha);
-            if(alphaHex.length() == 1) alphaHex = "0" + alphaHex;
+            if (alphaHex.length() == 1) alphaHex = "0" + alphaHex;
 
             return "#" + (alpha == 1 ? Tuils.EMPTYSTRING : alphaHex) + redHex + greenHex + blueHex;
         } else return Tuils.EMPTYSTRING;

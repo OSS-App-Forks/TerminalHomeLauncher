@@ -40,10 +40,10 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
     List<Song> songs;
 
     MusicService musicSrv;
-    boolean musicBound=false;
+    boolean musicBound = false;
     Intent playIntent;
 
-    boolean playbackPaused=true, stopped = true;
+    boolean playbackPaused = true, stopped = true;
 
     Thread loader;
 
@@ -87,7 +87,7 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
     }
 
     public void destroy() {
-        if(musicSrv != null && musicBound) {
+        if (musicSrv != null && musicBound) {
             musicSrv.stop();
             mContext.unbindService(musicConnection);
             mContext.stopService(playIntent);
@@ -106,21 +106,21 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
     }
 
     public String playNext() {
-        if(!musicBound) {
+        if (!musicBound) {
             init();
             waitingMethod = WAITING_NEXT;
 
             return null;
         }
 
-        playbackPaused=false;
+        playbackPaused = false;
         stopped = false;
 
         return musicSrv.playNext();
     }
 
     public String playPrev() {
-        if(!musicBound) {
+        if (!musicBound) {
             init();
             waitingMethod = WAITING_PREVIOUS;
 
@@ -135,25 +135,25 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
 
     @Override
     public void pause() {
-        if(musicSrv == null || playbackPaused) return;
+        if (musicSrv == null || playbackPaused) return;
 
-        playbackPaused=true;
+        playbackPaused = true;
         musicSrv.pausePlayer();
     }
 
     public String play() {
-        if(!musicBound) {
+        if (!musicBound) {
             init();
             waitingMethod = WAITING_PLAY;
 
             return null;
         }
 
-        if(stopped) {
+        if (stopped) {
             musicSrv.playSong();
             playbackPaused = false;
             stopped = false;
-        } else if(playbackPaused) {
+        } else if (playbackPaused) {
             playbackPaused = false;
             musicSrv.playPlayer();
         } else pause();
@@ -162,10 +162,10 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
     }
 
     public String lsSongs() {
-        if(songs.size() == 0) return "[]";
+        if (songs.size() == 0) return "[]";
 
         List<String> ss = new ArrayList<>();
-        for(Song s : songs) {
+        for (Song s : songs) {
             ss.add(s.getTitle());
         }
 
@@ -181,14 +181,14 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
             @Override
             public void run() {
                 try {
-                    if(songs == null) songs = new ArrayList<>();
+                    if (songs == null) songs = new ArrayList<>();
                     else songs.clear();
 
-                    if(XMLPrefsManager.getBoolean(Behavior.songs_from_mediastore)) {
+                    if (XMLPrefsManager.getBoolean(Behavior.songs_from_mediastore)) {
                         ContentResolver musicResolver = mContext.getContentResolver();
                         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
-                        if(musicCursor!=null && musicCursor.moveToFirst()){
+                        if (musicCursor != null && musicCursor.moveToFirst()) {
                             int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
                             int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
                             do {
@@ -201,16 +201,17 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
                         musicCursor.close();
                     } else {
                         String path = XMLPrefsManager.get(Behavior.songs_folder);
-                        if(path.length() == 0) return;
+                        if (path.length() == 0) return;
 
                         File file;
-                        if(path.startsWith(File.separator)) {
+                        if (path.startsWith(File.separator)) {
                             file = new File(path);
                         } else {
                             file = new File(XMLPrefsManager.get(Behavior.home_path), path);
                         }
 
-                        if(file.exists() && file.isDirectory()) songs.addAll(Tuils.getSongsInFolder(file));
+                        if (file.exists() && file.isDirectory())
+                            songs.addAll(Tuils.getSongsInFolder(file));
                     }
                 } catch (Exception e) {
                     Tuils.toFile(e);
@@ -224,19 +225,23 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
         loader.start();
     }
 
-    private final ServiceConnection musicConnection = new ServiceConnection(){
+    @Override
+    public boolean canPause() {
+        return true;
+    }    private final ServiceConnection musicConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
             musicSrv = binder.getService();
             musicSrv.setShuffle(XMLPrefsManager.getBoolean(Behavior.random_play));
 
-            if(loader.isAlive()) {
+            if (loader.isAlive()) {
                 synchronized (songs) {
                     try {
                         songs.wait();
-                    } catch (InterruptedException e) {}
+                    } catch (InterruptedException e) {
+                    }
                 }
             }
 
@@ -269,11 +274,6 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
     };
 
     @Override
-    public boolean canPause() {
-        return true;
-    }
-
-    @Override
     public boolean canSeekBackward() {
         return true;
     }
@@ -295,26 +295,26 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
 
     @Override
     public int getCurrentPosition() {
-        if(musicSrv != null && musicBound && musicSrv.isPng())
+        if (musicSrv != null && musicBound && musicSrv.isPng())
             return musicSrv.getPosn();
         else return -1;
     }
 
     @Override
     public int getDuration() {
-        if(musicSrv != null && musicBound && musicSrv.isPng())
+        if (musicSrv != null && musicBound && musicSrv.isPng())
             return musicSrv.getDur();
         else return -1;
     }
 
     public int getSongIndex() {
-        if(musicSrv != null) return musicSrv.getSongIndex();
+        if (musicSrv != null) return musicSrv.getSongIndex();
         return -1;
     }
 
     @Override
     public boolean isPlaying() {
-        if(musicSrv != null && musicBound)
+        if (musicSrv != null && musicBound)
             return musicSrv.isPng();
         return false;
     }
@@ -324,7 +324,7 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
     }
 
     public Song get(int index) {
-        if(index < 0 || index >= songs.size()) return null;
+        if (index < 0 || index >= songs.size()) return null;
         return songs.get(index);
     }
 
@@ -334,7 +334,7 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
     }
 
     public void select(String song) {
-        if(!musicBound) {
+        if (!musicBound) {
             init();
             waitingMethod = WAITING_LISTEN;
             savedParam = song;
@@ -343,11 +343,11 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
         }
 
         int i = -1;
-        for(int index = 0; index < songs.size(); index++) {
-            if(songs.get(index).getTitle().equals(song)) i = index;
+        for (int index = 0; index < songs.size(); index++) {
+            if (songs.get(index).getTitle().equals(song)) i = index;
         }
 
-        if(i == -1) {
+        if (i == -1) {
             return;
         }
 
@@ -363,4 +363,6 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
     public List<Song> getSongs() {
         return new ArrayList<>(songs);
     }
+
+
 }

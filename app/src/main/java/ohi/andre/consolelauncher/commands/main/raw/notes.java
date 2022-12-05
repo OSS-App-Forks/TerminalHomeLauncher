@@ -1,6 +1,7 @@
 package ohi.andre.consolelauncher.commands.main.raw;
 
 import android.content.Intent;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import ohi.andre.consolelauncher.R;
@@ -17,12 +18,37 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 
 public class notes extends ParamCommand {
 
+    @Override
+    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        return null;
+    }
+
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
+    @Override
+    public int priority() {
+        return 4;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_notes;
+    }
+
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
 
         add {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -38,7 +64,7 @@ public class notes extends ParamCommand {
         rm {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -54,7 +80,7 @@ public class notes extends ParamCommand {
         cp {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -90,7 +116,7 @@ public class notes extends ParamCommand {
         lock {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -107,7 +133,7 @@ public class notes extends ParamCommand {
         unlock {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -134,11 +160,6 @@ public class notes extends ParamCommand {
             }
         };
 
-        @Override
-        public int[] args() {
-            return new int[0];
-        }
-
         static Param get(String p) {
             p = p.toLowerCase();
             Param[] ps = values();
@@ -152,11 +173,16 @@ public class notes extends ParamCommand {
             Param[] ps = values();
             String[] ss = new String[ps.length];
 
-            for(int count = 0; count < ps.length; count++) {
+            for (int count = 0; count < ps.length; count++) {
                 ss[count] = ps[count].label();
             }
 
             return ss;
+        }
+
+        @Override
+        public int[] args() {
+            return new int[0];
         }
 
         @Override
@@ -173,30 +199,5 @@ public class notes extends ParamCommand {
         public String onNotArgEnough(ExecutePack pack, int n) {
             return pack.context.getString(R.string.help_notes);
         }
-    }
-
-    @Override
-    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        return null;
-    }
-
-    @Override
-    public String[] params() {
-        return Param.labels();
-    }
-
-    @Override
-    public int priority() {
-        return 4;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_notes;
     }
 }

@@ -16,7 +16,9 @@ public abstract class RedirectCommand implements CommandAbstraction {
     public List<Object> afterObjects = new ArrayList<>();
 
     public abstract String onRedirect(ExecutePack pack);
+
     public abstract int getHint();
+
     public abstract boolean isWaitingPermission();
 
     public void cleanup() {

@@ -18,14 +18,9 @@ public class Assist {
     // For more information, see https://code.google.com/p/android/issues/detail?id=5497
     // To use this class, simply invoke assistActivity() on an Activity that already has its content view set.
 
-    public static void assistActivity (Activity activity) {
-        new Assist(activity);
-    }
-
     private final View mChildOfContent;
-    private int usableHeightPrevious;
     private final FrameLayout.LayoutParams frameLayoutParams;
-
+    private int usableHeightPrevious;
     private Assist(Activity activity) {
         FrameLayout content = (FrameLayout) activity.findViewById(android.R.id.content);
         mChildOfContent = content.getChildAt(0);
@@ -33,12 +28,16 @@ public class Assist {
         frameLayoutParams = (FrameLayout.LayoutParams) mChildOfContent.getLayoutParams();
     }
 
+    public static void assistActivity(Activity activity) {
+        new Assist(activity);
+    }
+
     private void possiblyResizeChildOfContent() {
         int usableHeightNow = computeUsableHeight();
         if (usableHeightNow != usableHeightPrevious) {
             int usableHeightSansKeyboard = mChildOfContent.getRootView().getHeight();
             int heightDifference = usableHeightSansKeyboard - usableHeightNow;
-            if (heightDifference > (usableHeightSansKeyboard/4)) {
+            if (heightDifference > (usableHeightSansKeyboard / 4)) {
                 // keyboard probably just became visible
                 frameLayoutParams.height = usableHeightSansKeyboard - heightDifference;
             } else {

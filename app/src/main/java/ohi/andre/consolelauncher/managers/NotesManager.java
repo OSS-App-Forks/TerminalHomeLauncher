@@ -65,31 +65,26 @@ public class NotesManager {
 
     public static String BROADCAST_COUNT = "broadcastCount";
     public static String CREATION_TIME = "creationTime", TEXT = "text", LOCK = "lock";
-
+    public static int broadcastCount;
     private final String PATH = "notes.xml", NAME = "NOTES", NOTE_NODE = "note";
-
-    CharSequence oldNotes;
     public boolean hasChanged;
-
+    CharSequence oldNotes;
     Set<Class> classes;
     List<Note> notes;
-
     Pattern optionalPattern;
     String footer, header, divider;
     int color, lockedColor;
-
     boolean allowLink;
     int linkColor;
-
     BroadcastReceiver receiver;
-
     PackageManager packageManager;
-
     Context mContext;
-
-    public static int broadcastCount;
-
-//    noteview can't be changed too much, it may be shared
+    Pattern colorPattern = Pattern.compile("(\\d+|#[\\da-zA-Z]{6,8})\\(([^)]*)\\)");
+    Pattern countPattern = Pattern.compile("%c", Pattern.CASE_INSENSITIVE);
+    Pattern lockPattern = Pattern.compile("%l", Pattern.CASE_INSENSITIVE);
+    Pattern rowPattern = Pattern.compile("%r", Pattern.CASE_INSENSITIVE);
+    Pattern uriPattern = Pattern.compile("(http[s]?:[^\\s]+|www\\.[^\\s]*)\\.[a-z]+");
+    //    noteview can't be changed too much, it may be shared
     public NotesManager(Context context, TextView noteView) {
         classes = new HashSet<>();
         notes = new ArrayList<>();
@@ -113,7 +108,7 @@ public class NotesManager {
         divider = Tuils.patternNewline.matcher(divider).replaceAll(Tuils.NEWLINE);
 
         allowLink = XMLPrefsManager.getBoolean(Behavior.notes_allow_link);
-        if(allowLink && noteView != null) {
+        if (allowLink && noteView != null) {
             noteView.setMovementMethod(new LinkMovementMethod());
             linkColor = XMLPrefsManager.getColor(Theme.link_color);
         }
@@ -134,20 +129,20 @@ public class NotesManager {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                if(intent.getIntExtra(BROADCAST_COUNT, 0) < broadcastCount) return;
+                if (intent.getIntExtra(BROADCAST_COUNT, 0) < broadcastCount) return;
                 broadcastCount++;
 
-                if(intent.getAction().equals(ACTION_ADD)) {
+                if (intent.getAction().equals(ACTION_ADD)) {
                     String text = intent.getStringExtra(TEXT);
-                    if(text == null) return;
+                    if (text == null) return;
 
                     boolean lock = false;
                     String[] split = text.split(Tuils.SPACE);
                     int startAt = 0;
 
                     String beforeSpace = split.length >= 2 ? split[0] : null;
-                    if(beforeSpace != null) {
-                        if((beforeSpace.equals("true") || beforeSpace.equals("false"))) {
+                    if (beforeSpace != null) {
+                        if ((beforeSpace.equals("true") || beforeSpace.equals("false"))) {
                             lock = Boolean.parseBoolean(beforeSpace);
                             startAt++;
                         }
@@ -158,23 +153,23 @@ public class NotesManager {
                     }
 
                     addNote(text, lock);
-                } else if(intent.getAction().equals(ACTION_RM)) {
+                } else if (intent.getAction().equals(ACTION_RM)) {
                     String s = intent.getStringExtra(TEXT);
-                    if(s == null) return;
+                    if (s == null) return;
 
                     rmNote(s);
-                } else if(intent.getAction().equals(ACTION_CLEAR)) {
+                } else if (intent.getAction().equals(ACTION_CLEAR)) {
                     clearNotes(context);
-                } else if(intent.getAction().equals(ACTION_LS)) {
+                } else if (intent.getAction().equals(ACTION_LS)) {
                     lsNotes(context);
-                } else if(intent.getAction().equals(ACTION_LOCK)) {
+                } else if (intent.getAction().equals(ACTION_LOCK)) {
                     String text = intent.getStringExtra(TEXT);
                     boolean lock = intent.getBooleanExtra(LOCK, false);
 
                     lockNote(context, text, lock);
-                } else if(intent.getAction().equals(ACTION_CP)) {
+                } else if (intent.getAction().equals(ACTION_CP)) {
                     String s = intent.getStringExtra(TEXT);
-                    if(s == null) return;
+                    if (s == null) return;
 
                     cpNote(s);
                 }
@@ -185,18 +180,18 @@ public class NotesManager {
     }
 
     private void load(Context context, boolean loadClasses) {
-        if(loadClasses) classes.clear();
+        if (loadClasses) classes.clear();
         notes.clear();
 
         File file = new File(Tuils.getFolder(), PATH);
-        if(!file.exists()) {
+        if (!file.exists()) {
             resetFile(file, NAME);
         }
 
         Object[] o;
         try {
             o = XMLPrefsManager.buildDocument(file, NAME);
-            if(o == null) {
+            if (o == null) {
                 Tuils.sendXMLParseError(context, PATH);
                 return;
             }
@@ -219,13 +214,13 @@ public class NotesManager {
                 final Element e = (Element) node;
                 final String name = e.getNodeName();
 
-                if(name.equals(NOTE_NODE)) {
+                if (name.equals(NOTE_NODE)) {
                     long time = XMLPrefsManager.getLongAttribute(e, CREATION_TIME);
                     String text = XMLPrefsManager.getStringAttribute(e, XMLPrefsManager.VALUE_ATTRIBUTE);
                     boolean lock = XMLPrefsManager.getBooleanAttribute(e, LOCK);
 
                     notes.add(new Note(time, text, lock));
-                } else if(loadClasses) {
+                } else if (loadClasses) {
                     int id;
                     try {
                         id = Integer.parseInt(name);
@@ -250,20 +245,14 @@ public class NotesManager {
         invalidateNotes();
     }
 
-    Pattern colorPattern = Pattern.compile("(\\d+|#[\\da-zA-Z]{6,8})\\(([^)]*)\\)");
-    Pattern countPattern = Pattern.compile("%c", Pattern.CASE_INSENSITIVE);
-    Pattern lockPattern = Pattern.compile("%l", Pattern.CASE_INSENSITIVE);
-    Pattern rowPattern = Pattern.compile("%r", Pattern.CASE_INSENSITIVE);
-    Pattern uriPattern = Pattern.compile("(http[s]?:[^\\s]+|www\\.[^\\s]*)\\.[a-z]+");
-
     private void invalidateNotes() {
         String header = this.header;
         Matcher mh = optionalPattern.matcher(header);
-        while(mh.find()) {
+        while (mh.find()) {
             header = header.replace(mh.group(0), mh.groupCount() == 2 ? mh.group(notes.size() > 0 ? 1 : 2) : Tuils.EMPTYSTRING);
         }
 
-        if(header.length() > 0) {
+        if (header.length() > 0) {
             String h = countPattern.matcher(header).replaceAll(String.valueOf(notes.size()));
             h = Tuils.patternNewline.matcher(h).replaceAll(Tuils.NEWLINE);
             oldNotes = Tuils.span(h, this.color);
@@ -272,7 +261,7 @@ public class NotesManager {
         }
 
         CharSequence ns = Tuils.EMPTYSTRING;
-        for(int j = 0; j < notes.size(); j++) {
+        for (int j = 0; j < notes.size(); j++) {
             Note n = notes.get(j);
 
             CharSequence t = n.text;
@@ -284,24 +273,24 @@ public class NotesManager {
 
             t = TimeManager.instance.replace(t, n.creationTime);
 
-            if(allowLink) {
+            if (allowLink) {
                 Matcher m = uriPattern.matcher(t);
-                while(m.find()) {
+                while (m.find()) {
                     String g = m.group();
 
 //                    www.
-                    if(g.startsWith("w")) {
+                    if (g.startsWith("w")) {
                         g = "http://" + g;
                     }
 
                     Uri u = Uri.parse(g);
-                    if(u == null) continue;
+                    if (u == null) continue;
 
                     SpannableString sp = new SpannableString(m.group());
                     sp.setSpan(new LongClickableSpan(u), 0, sp.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     sp.setSpan(new ForegroundColorSpan(linkColor), 0, sp.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                    t = TextUtils.replace(t, new String[] {m.group()}, new CharSequence[] {sp});
+                    t = TextUtils.replace(t, new String[]{m.group()}, new CharSequence[]{sp});
                 }
             }
 
@@ -312,24 +301,25 @@ public class NotesManager {
 
         String footer = this.footer;
         Matcher mf = optionalPattern.matcher(footer);
-        while(mf.find()) {
+        while (mf.find()) {
             footer = footer.replace(mf.group(0), mf.groupCount() == 2 ? mf.group(notes.size() > 0 ? 1 : 2) : Tuils.EMPTYSTRING);
         }
 
-        if(footer.length() > 0) {
+        if (footer.length() > 0) {
             String h = countPattern.matcher(footer).replaceAll(String.valueOf(notes.size()));
             h = Tuils.patternNewline.matcher(h).replaceAll(Tuils.NEWLINE);
             oldNotes = TextUtils.concat(oldNotes, Tuils.span(h, this.color));
-        } else {}
+        } else {
+        }
 
         Matcher m = colorPattern.matcher(oldNotes);
-        while(m.find()) {
+        while (m.find()) {
             String match = m.group();
             String idColor = m.group(1);
             CharSequence t = m.group(2);
 
             int color;
-            if(idColor.startsWith("#")) {
+            if (idColor.startsWith("#")) {
 //                    color
                 try {
                     color = Color.parseColor(idColor);
@@ -348,7 +338,7 @@ public class NotesManager {
             }
 
             t = Tuils.span(t.toString(), color);
-            oldNotes = TextUtils.replace(oldNotes, new String[] {match}, new CharSequence[] {t});
+            oldNotes = TextUtils.replace(oldNotes, new String[]{match}, new CharSequence[]{t});
         }
 
         hasChanged = true;
@@ -366,13 +356,13 @@ public class NotesManager {
         Collections.sort(notes);
 
         File file = new File(Tuils.getFolder(), PATH);
-        if(!file.exists()) {
+        if (!file.exists()) {
             resetFile(file, NAME);
         }
 
-        String output = XMLPrefsManager.add(file, NOTE_NODE, new String[] {CREATION_TIME, VALUE_ATTRIBUTE, LOCK}, new String[] {String.valueOf(t), s, String.valueOf(lock)});
-        if(output != null) {
-            if(output.length() > 0) Tuils.sendOutput(mContext, output);
+        String output = XMLPrefsManager.add(file, NOTE_NODE, new String[]{CREATION_TIME, VALUE_ATTRIBUTE, LOCK}, new String[]{String.valueOf(t), s, String.valueOf(lock)});
+        if (output != null) {
+            if (output.length() > 0) Tuils.sendOutput(mContext, output);
             else Tuils.sendOutput(mContext, R.string.output_error);
         }
 
@@ -381,7 +371,7 @@ public class NotesManager {
 
     private void rmNote(String s) {
         int index = findNote(s);
-        if(index == -1) {
+        if (index == -1) {
             Tuils.sendOutput(mContext, R.string.note_not_found);
             return;
         }
@@ -389,13 +379,13 @@ public class NotesManager {
         long time = notes.remove(index).creationTime;
 
         File file = new File(Tuils.getFolder(), PATH);
-        if(!file.exists()) {
+        if (!file.exists()) {
             resetFile(file, NAME);
         }
 
-        String output = XMLPrefsManager.removeNode(file, new String[] {CREATION_TIME}, new String[] {String.valueOf(time)});
-        if(output != null) {
-            if(output.length() > 0) Tuils.sendOutput(mContext, output);
+        String output = XMLPrefsManager.removeNode(file, new String[]{CREATION_TIME}, new String[]{String.valueOf(time)});
+        if (output != null) {
+            if (output.length() > 0) Tuils.sendOutput(mContext, output);
         }
 
         invalidateNotes();
@@ -408,7 +398,7 @@ public class NotesManager {
         }
 
         int index = findNote(s);
-        if(index == -1) {
+        if (index == -1) {
             Tuils.sendOutput(mContext, R.string.note_not_found);
             return;
         }
@@ -425,16 +415,16 @@ public class NotesManager {
 
     private void clearNotes(Context context) {
         Iterator<Note> iterator = notes.iterator();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Note n = iterator.next();
-            if(!n.lock) iterator.remove();
+            if (!n.lock) iterator.remove();
         }
 
         File file = new File(Tuils.getFolder(), PATH);
-        if(!file.exists()) resetFile(file, NAME);
+        if (!file.exists()) resetFile(file, NAME);
 
-        String output = XMLPrefsManager.removeNode(file, new String[] {LOCK}, new String[] {String.valueOf(false)}, true, true);
-        if(output != null && output.length() > 0) Tuils.sendOutput(Color.RED, context, output);
+        String output = XMLPrefsManager.removeNode(file, new String[]{LOCK}, new String[]{String.valueOf(false)}, true, true);
+        if (output != null && output.length() > 0) Tuils.sendOutput(Color.RED, context, output);
 
         invalidateNotes();
     }
@@ -442,7 +432,7 @@ public class NotesManager {
     private void lsNotes(Context c) {
         StringBuilder builder = new StringBuilder();
 
-        for(int j = 0; j < notes.size(); j++) {
+        for (int j = 0; j < notes.size(); j++) {
             Note n = notes.get(j);
             builder.append(" - ").append(j + 1).append(n.lock ? " [locked]" : Tuils.EMPTYSTRING).append(" -> ").append(n.text).append(Tuils.NEWLINE);
         }
@@ -452,7 +442,7 @@ public class NotesManager {
 
     private void lockNote(Context context, String s, boolean lock) {
         int index = findNote(s);
-        if(index == -1) {
+        if (index == -1) {
             Tuils.sendOutput(context, R.string.note_not_found);
             return;
         }
@@ -464,12 +454,12 @@ public class NotesManager {
         long time = n.creationTime;
 
         File file = new File(Tuils.getFolder(), PATH);
-        if(!file.exists()) {
+        if (!file.exists()) {
             resetFile(file, NAME);
         }
 
-        String output = XMLPrefsManager.set(file, NOTE_NODE, new String[] {CREATION_TIME}, new String[] {String.valueOf(time)}, new String[] {LOCK}, new String[] {String.valueOf(lock)}, true);
-        if(output != null && output.length() > 0) Tuils.sendOutput(context, output);
+        String output = XMLPrefsManager.set(file, NOTE_NODE, new String[]{CREATION_TIME}, new String[]{String.valueOf(time)}, new String[]{LOCK}, new String[]{String.valueOf(lock)}, true);
+        if (output != null && output.length() > 0) Tuils.sendOutput(context, output);
 
         invalidateNotes();
     }
@@ -477,15 +467,16 @@ public class NotesManager {
     private int findNote(String s) {
         try {
             int index = Integer.parseInt(s) - 1;
-            if(index < 0 || index >= notes.size()) return -1;
+            if (index < 0 || index >= notes.size()) return -1;
             return index;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         s = s.toLowerCase().trim();
 
         CharSequence note;
         int c = 0;
-        for(; c < notes.size(); c++) {
+        for (; c < notes.size(); c++) {
             Note n = notes.get(c);
 
             String text = n.text;
@@ -497,13 +488,13 @@ public class NotesManager {
             note = text;
 
             Matcher m = colorPattern.matcher(notes.get(c).text);
-            while(m.find()) {
+            while (m.find()) {
                 String match = m.group();
                 String idColor = m.group(1);
                 CharSequence t = m.group(2);
 
                 int color;
-                if(idColor.startsWith("#")) {
+                if (idColor.startsWith("#")) {
 //                    color
                     try {
                         color = Color.parseColor(idColor);
@@ -522,13 +513,13 @@ public class NotesManager {
                 }
 
                 t = Tuils.span(t.toString(), color);
-                note = TextUtils.replace(note, new String[] {match}, new CharSequence[] {t});
+                note = TextUtils.replace(note, new String[]{match}, new CharSequence[]{t});
             }
 
-            if(note.toString().toLowerCase().startsWith(s)) break;
+            if (note.toString().toLowerCase().startsWith(s)) break;
         }
 
-        if(c == notes.size()) {
+        if (c == notes.size()) {
             return -1;
         }
         return c;
@@ -536,9 +527,9 @@ public class NotesManager {
 
     private Class findClass(int id) {
         Iterator<Class> classIterator = classes.iterator();
-        while(classIterator.hasNext()) {
+        while (classIterator.hasNext()) {
             Class cl = classIterator.next();
-            if(cl.id == id) return cl;
+            if (cl.id == id) return cl;
         }
 
         return null;
@@ -548,16 +539,6 @@ public class NotesManager {
         LocalBroadcastManager.getInstance(context.getApplicationContext()).unregisterReceiver(receiver);
     }
 
-    private class Class {
-        int id;
-        int color;
-
-        public Class(int id, int color) {
-            this.id = id;
-            this.color = color;
-        }
-    }
-
     private static class Note implements Comparable<Note> {
         private static final int SORTING_TIME_UPDOWN = 0;
         private static final int SORTING_TIME_DOWNUP = 1;
@@ -565,12 +546,10 @@ public class NotesManager {
         private static final int SORTING_ALPHA_DOWNUP = 3;
         private static final int SORTING_LOCK_BEFORE = 4;
         private static final int SORTING_UNLOCK_BEFORE = 5;
-
+        public static int sorting = Integer.MAX_VALUE;
         long creationTime;
         String text;
         boolean lock;
-
-        public static int sorting = Integer.MAX_VALUE;
 
         public Note(long time, String text, boolean lock) {
             this.creationTime = time;
@@ -590,19 +569,19 @@ public class NotesManager {
                 case SORTING_ALPHA_DOWNUP:
                     return Tuils.alphabeticCompare(o.text, text);
                 case SORTING_LOCK_BEFORE:
-                    if(lock) {
-                        if(o.lock) return 0;
+                    if (lock) {
+                        if (o.lock) return 0;
                         return -1;
                     } else {
-                        if(o.lock) return 1;
+                        if (o.lock) return 1;
                         return 0;
                     }
                 case SORTING_UNLOCK_BEFORE:
-                    if(lock) {
-                        if(o.lock) return 0;
+                    if (lock) {
+                        if (o.lock) return 0;
                         return 1;
                     } else {
-                        if(o.lock) return -1;
+                        if (o.lock) return -1;
                         return 0;
                     }
                 default:
@@ -613,6 +592,16 @@ public class NotesManager {
         @Override
         public String toString() {
             return creationTime + " : " + text;
+        }
+    }
+
+    private class Class {
+        int id;
+        int color;
+
+        public Class(int id, int color) {
+            this.id = id;
+            this.color = color;
         }
     }
 }

@@ -17,19 +17,22 @@ public class LongClickMovementMethod extends LinkMovementMethod {
 //    private int lastX = 0;
 //    private int lastY = 0;
 
+    private static LongClickMovementMethod sInstance;
     private int longClickDuration, lastLine = -1;
+    private WasActivatedRunnable runnable;
 
-    private abstract class WasActivatedRunnable implements Runnable {
-
-        public boolean wasActivated = false;
-
-        @Override
-        public void run() {
-            wasActivated = true;
+    public static MovementMethod getInstance(int longClickDuration) {
+        if (sInstance == null) {
+            sInstance = new LongClickMovementMethod();
+            sInstance.longClickDuration = longClickDuration;
         }
+
+        return sInstance;
     }
 
-    private WasActivatedRunnable runnable;
+    public static MovementMethod getInstance() {
+        return getInstance(-1);
+    }
 
     @Override
     public boolean onTouchEvent(final TextView widget, Spannable buffer, MotionEvent event) {
@@ -68,13 +71,14 @@ public class LongClickMovementMethod extends LinkMovementMethod {
 //                        link[0].onLongClick(widget);
 //                    }
 
-                if(runnable != null) {
+                if (runnable != null) {
 //                        long click, do nothing
-                    if(runnable.wasActivated) {}
+                    if (runnable.wasActivated) {
+                    }
 //                        single click
                     else {
                         widget.removeCallbacks(runnable);
-                        if(link.length > 0) link[0].onClick(widget);
+                        if (link.length > 0) link[0].onClick(widget);
                     }
 
                     runnable = null;
@@ -90,7 +94,7 @@ public class LongClickMovementMethod extends LinkMovementMethod {
 
 //                    lastClickTime = System.currentTimeMillis();
 
-                if(link.length > 0) {
+                if (link.length > 0) {
                     final LongClickableSpan span = link[0];
                     runnable = new WasActivatedRunnable() {
 
@@ -107,7 +111,7 @@ public class LongClickMovementMethod extends LinkMovementMethod {
 //                Tuils.log("action move or cancel");
 
 //                action_move
-                if(line != lastLine) {
+                if (line != lastLine) {
 //                    Tuils.log("line != last line");
                     widget.removeCallbacks(runnable);
                 }
@@ -123,17 +127,13 @@ public class LongClickMovementMethod extends LinkMovementMethod {
         return super.onTouchEvent(widget, buffer, event);
     }
 
-    private static LongClickMovementMethod sInstance;
-    public static MovementMethod getInstance(int longClickDuration) {
-        if (sInstance == null) {
-            sInstance = new LongClickMovementMethod();
-            sInstance.longClickDuration = longClickDuration;
+    private abstract class WasActivatedRunnable implements Runnable {
+
+        public boolean wasActivated = false;
+
+        @Override
+        public void run() {
+            wasActivated = true;
         }
-
-        return sInstance;
-    }
-
-    public static MovementMethod getInstance() {
-        return getInstance(-1);
     }
 }

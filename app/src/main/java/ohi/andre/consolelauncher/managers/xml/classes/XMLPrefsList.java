@@ -22,9 +22,9 @@ public class XMLPrefsList {
     }
 
     public XMLPrefsEntry get(Object o) {
-        if(o instanceof Integer) return at((Integer) o);
+        if (o instanceof Integer) return at((Integer) o);
 
-        for(XMLPrefsEntry e : list) if(e.equals(o)) return e;
+        for (XMLPrefsEntry e : list) if (e.equals(o)) return e;
         return null;
     }
 
@@ -38,7 +38,7 @@ public class XMLPrefsList {
 
     public List<String> values() {
         List<String> vs = new ArrayList<>();
-        for(XMLPrefsEntry entry : list) vs.add(entry.key + "=" + entry.value);
+        for (XMLPrefsEntry entry : list) vs.add(entry.key + "=" + entry.value);
         return vs;
     }
 
@@ -46,7 +46,7 @@ public class XMLPrefsList {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        for(XMLPrefsEntry entry : list) {
+        for (XMLPrefsEntry entry : list) {
             builder.append(entry.key).append(" -> ").append(entry.value).append(Tuils.NEWLINE);
         }
 

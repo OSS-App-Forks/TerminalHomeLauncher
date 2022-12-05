@@ -1,20 +1,20 @@
 /*
  * =============================================================================
- * 
+ *
  *   Copyright (c) 2014-2017, The UNBESCAPE team (http://www.unbescape.org)
- * 
+ *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
- * 
+ *
  * =============================================================================
  */
 package ohi.andre.consolelauncher.tuils.html_escape;
@@ -25,18 +25,16 @@ import java.io.Writer;
 
 /**
  * <p>
- *   Internal class in charge of performing the real escape/unescape operations.
+ * Internal class in charge of performing the real escape/unescape operations.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0.0
- *
  */
 final class HtmlEscapeUtil {
 
 
-    
+
     /*
      * GLOSSARY
      * ------------------------
@@ -61,8 +59,6 @@ final class HtmlEscapeUtil {
      */
 
 
-
-
     /*
      * Prefixes and suffix defined for use in decimal/hexa escape and unescape.
      */
@@ -81,14 +77,9 @@ final class HtmlEscapeUtil {
     private static final char[] HEXA_CHARS_LOWER = "0123456789abcdef".toCharArray();
 
 
-
-
     private HtmlEscapeUtil() {
         super();
     }
-
-
-
 
 
     /*
@@ -106,7 +97,7 @@ final class HtmlEscapeUtil {
         final boolean useHexa = escapeType.getUseHexa();
 
         final HtmlEscapeSymbols symbols =
-                (useHtml5? HtmlEscapeSymbols.HTML5_SYMBOLS : HtmlEscapeSymbols.HTML4_SYMBOLS);
+                (useHtml5 ? HtmlEscapeSymbols.HTML5_SYMBOLS : HtmlEscapeSymbols.HTML4_SYMBOLS);
 
         StringBuilder strBuilder = null;
 
@@ -236,9 +227,6 @@ final class HtmlEscapeUtil {
     }
 
 
-
-
-
     /*
      * Perform an escape operation, based on a Reader, according to the specified level and type and writing the
      * result to a Writer.
@@ -260,7 +248,7 @@ final class HtmlEscapeUtil {
         final boolean useHexa = escapeType.getUseHexa();
 
         final HtmlEscapeSymbols symbols =
-                (useHtml5? HtmlEscapeSymbols.HTML5_SYMBOLS : HtmlEscapeSymbols.HTML4_SYMBOLS);
+                (useHtml5 ? HtmlEscapeSymbols.HTML5_SYMBOLS : HtmlEscapeSymbols.HTML4_SYMBOLS);
 
         int c1, c2; // c1: current char, c2: next char
 
@@ -295,7 +283,7 @@ final class HtmlEscapeUtil {
             /*
              * Compute the codepoint. This will be used instead of the char for the rest of the process.
              */
-            final int codepoint = codePointAt((char)c1, (char)c2);
+            final int codepoint = codePointAt((char) c1, (char) c2);
 
 
             /*
@@ -362,15 +350,12 @@ final class HtmlEscapeUtil {
     }
 
 
-
-
-
     /*
      * Perform an escape operation, based on char[], according to the specified level and type.
      */
     static void escape(final char[] text, final int offset, final int len, final Writer writer,
                        final HtmlEscapeType escapeType, final HtmlEscapeLevel escapeLevel)
-                       throws IOException {
+            throws IOException {
 
         if (text == null || text.length == 0) {
             return;
@@ -382,7 +367,7 @@ final class HtmlEscapeUtil {
         final boolean useHexa = escapeType.getUseHexa();
 
         final HtmlEscapeSymbols symbols =
-                (useHtml5? HtmlEscapeSymbols.HTML5_SYMBOLS : HtmlEscapeSymbols.HTML4_SYMBOLS);
+                (useHtml5 ? HtmlEscapeSymbols.HTML5_SYMBOLS : HtmlEscapeSymbols.HTML4_SYMBOLS);
 
         final int max = (offset + len);
 
@@ -496,10 +481,6 @@ final class HtmlEscapeUtil {
     }
 
 
-
-
-
-
     /*
      * This translation is needed during unescape to support ill-formed escape codes for Windows 1252 codes
      * instead of the correct unicode ones (for example, &#x80; for the euro symbol instead of &#x20aC;). This is
@@ -508,42 +489,71 @@ final class HtmlEscapeUtil {
      */
     static int translateIllFormedCodepoint(final int codepoint) {
         switch (codepoint) {
-            case 0x00: return 0xFFFD;
-            case 0x80: return 0x20AC;
-            case 0x82: return 0x201A;
-            case 0x83: return 0x0192;
-            case 0x84: return 0x201E;
-            case 0x85: return 0x2026;
-            case 0x86: return 0x2020;
-            case 0x87: return 0x2021;
-            case 0x88: return 0x02C6;
-            case 0x89: return 0x2030;
-            case 0x8A: return 0x0160;
-            case 0x8B: return 0x2039;
-            case 0x8C: return 0x0152;
-            case 0x8E: return 0x017D;
-            case 0x91: return 0x2018;
-            case 0x92: return 0x2019;
-            case 0x93: return 0x201C;
-            case 0x94: return 0x201D;
-            case 0x95: return 0x2022;
-            case 0x96: return 0x2013;
-            case 0x97: return 0x2014;
-            case 0x98: return 0x02DC;
-            case 0x99: return 0x2122;
-            case 0x9A: return 0x0161;
-            case 0x9B: return 0x203A;
-            case 0x9C: return 0x0153;
-            case 0x9E: return 0x017E;
-            case 0x9F: return 0x0178;
-            default: break;
+            case 0x00:
+                return 0xFFFD;
+            case 0x80:
+                return 0x20AC;
+            case 0x82:
+                return 0x201A;
+            case 0x83:
+                return 0x0192;
+            case 0x84:
+                return 0x201E;
+            case 0x85:
+                return 0x2026;
+            case 0x86:
+                return 0x2020;
+            case 0x87:
+                return 0x2021;
+            case 0x88:
+                return 0x02C6;
+            case 0x89:
+                return 0x2030;
+            case 0x8A:
+                return 0x0160;
+            case 0x8B:
+                return 0x2039;
+            case 0x8C:
+                return 0x0152;
+            case 0x8E:
+                return 0x017D;
+            case 0x91:
+                return 0x2018;
+            case 0x92:
+                return 0x2019;
+            case 0x93:
+                return 0x201C;
+            case 0x94:
+                return 0x201D;
+            case 0x95:
+                return 0x2022;
+            case 0x96:
+                return 0x2013;
+            case 0x97:
+                return 0x2014;
+            case 0x98:
+                return 0x02DC;
+            case 0x99:
+                return 0x2122;
+            case 0x9A:
+                return 0x0161;
+            case 0x9B:
+                return 0x203A;
+            case 0x9C:
+                return 0x0153;
+            case 0x9E:
+                return 0x017E;
+            case 0x9F:
+                return 0x0178;
+            default:
+                break;
         }
         if (codepoint >= 0xD800 && codepoint <= 0xDFFF) {
             return 0xFFFD;
         } else if (codepoint > 0x10FFFF) {
             return 0xFFFD;
         } else {
-          return codepoint;
+            return codepoint;
         }
     }
 
@@ -601,13 +611,6 @@ final class HtmlEscapeUtil {
     }
 
 
-
-
-
-
-
-
-
     /*
      * Perform an unescape operation based on String. Unescape operations are always based on the HTML5 symbol set.
      * Unescape operations will be performed in the most similar way possible to the process a browser follows for
@@ -648,11 +651,11 @@ final class HtmlEscapeUtil {
                 final char c1 = text.charAt(i + 1);
 
                 if (c1 == '\u0020' || // SPACE
-                    c1 == '\n' ||     // LF
-                    c1 == '\u0009' || // TAB
-                    c1 == '\u000C' || // FF
-                    c1 == '\u003C' || // LES-THAN SIGN
-                    c1 == '\u0026') { // AMPERSAND
+                        c1 == '\n' ||     // LF
+                        c1 == '\u0009' || // TAB
+                        c1 == '\u000C' || // FF
+                        c1 == '\u003C' || // LES-THAN SIGN
+                        c1 == '\u0026') { // AMPERSAND
                     // Not a character references. No characters are consumed, and nothing is returned.
                     continue;
 
@@ -814,7 +817,7 @@ final class HtmlEscapeUtil {
                     strBuilder.append((char) codepoints[1]);
                 }
             } else {
-                strBuilder.append((char)codepoint);
+                strBuilder.append((char) codepoint);
             }
 
         }
@@ -838,10 +841,6 @@ final class HtmlEscapeUtil {
         return strBuilder.toString();
 
     }
-
-
-
-
 
 
     /*
@@ -1107,7 +1106,7 @@ final class HtmlEscapeUtil {
                     writer.write((char) codepoints[1]);
                 }
             } else {
-                writer.write((char)codepoint);
+                writer.write((char) codepoint);
             }
 
             /*
@@ -1127,17 +1126,13 @@ final class HtmlEscapeUtil {
     }
 
 
-
-
-
-
     /*
      * Perform an unescape operation based on char[]. Unescape operations are always based on the HTML5 symbol set.
      * Unescape operations will be performed in the most similar way possible to the process a browser follows for
      * showing HTML5 escaped code. See: http://www.w3.org/TR/html5/syntax.html#consume-a-character-reference
      */
     static void unescape(final char[] text, final int offset, final int len, final Writer writer)
-                         throws IOException {
+            throws IOException {
 
         if (text == null) {
             return;
@@ -1349,8 +1344,6 @@ final class HtmlEscapeUtil {
     }
 
 
-
-
     private static int codePointAt(final char c1, final char c2) {
         if (Character.isHighSurrogate(c1)) {
             if (c2 >= 0) {
@@ -1361,7 +1354,6 @@ final class HtmlEscapeUtil {
         }
         return c1;
     }
-
 
 
 }

@@ -95,13 +95,13 @@ public class MainPack extends ExecutePack {
 
     public void dispose() {
         TorchManager mgr = TorchManager.getInstance();
-        if(mgr.isOn()) mgr.turnOff();
+        if (mgr.isOn()) mgr.turnOff();
     }
 
     public void destroy() {
-        if(player != null) player.destroy();
+        if (player != null) player.destroy();
         appsManager.onDestroy();
-        if(rssManager != null) rssManager.dispose();
+        if (rssManager != null) rssManager.dispose();
         contacts.destroy(context);
     }
 

@@ -25,7 +25,7 @@ public class tuixt implements CommandAbstraction {
     public String exec(ExecutePack pack) {
         MainPack info = (MainPack) pack;
         File file = info.get(File.class);
-        if(file.isDirectory()) {
+        if (file.isDirectory()) {
             return info.res.getString(R.string.output_isdirectory);
         }
 
@@ -39,7 +39,7 @@ public class tuixt implements CommandAbstraction {
 
     @Override
     public int[] argType() {
-        return new int[] {CommandAbstraction.FILE};
+        return new int[]{CommandAbstraction.FILE};
     }
 
     @Override
@@ -57,14 +57,14 @@ public class tuixt implements CommandAbstraction {
         MainPack info = (MainPack) pack;
 
         String path = info.getString();
-        if(path == null || path.length() == 0) {
+        if (path == null || path.length() == 0) {
             return onNotArgEnough(info, info.args.length);
         }
 
         FileManager.DirInfo dirInfo = FileManager.cd(info.currentDirectory, path);
 
         File file = new File(dirInfo.getCompletePath());
-        if(!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+        if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
             return info.res.getString(R.string.output_error);
         }
 

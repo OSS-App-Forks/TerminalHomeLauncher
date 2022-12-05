@@ -34,7 +34,7 @@ public class CommandGroup {
         while (iterator.hasNext()) {
             String s = iterator.next();
             CommandAbstraction ca = buildCommand(s);
-            if(ca != null && ( !(ca instanceof APICommand) || ((APICommand) ca).willWorkOn(Build.VERSION.SDK_INT))) {
+            if (ca != null && (!(ca instanceof APICommand) || ((APICommand) ca).willWorkOn(Build.VERSION.SDK_INT))) {
                 cmdAbs.add(ca);
             } else {
                 iterator.remove();
@@ -51,8 +51,8 @@ public class CommandGroup {
     }
 
     public CommandAbstraction getCommandByName(String name) {
-        for(CommandAbstraction c : commands) {
-            if(c.getClass().getSimpleName().equals(name)) {
+        for (CommandAbstraction c : commands) {
+            if (c.getClass().getSimpleName().equals(name)) {
                 return c;
             }
         }
@@ -64,7 +64,7 @@ public class CommandGroup {
         String fullCmdName = packageName + Tuils.DOT + name;
         try {
             Class<CommandAbstraction> clazz = (Class<CommandAbstraction>) Class.forName(fullCmdName);
-            if(CommandAbstraction.class.isAssignableFrom(clazz)) {
+            if (CommandAbstraction.class.isAssignableFrom(clazz)) {
                 Constructor<CommandAbstraction> constructor = clazz.getConstructor();
                 return constructor.newInstance();
             }

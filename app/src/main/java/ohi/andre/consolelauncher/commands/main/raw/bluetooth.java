@@ -15,9 +15,9 @@ public class bluetooth implements CommandAbstraction {
 
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 
-        if(adapter == null) return info.context.getString(R.string.output_bluetooth_unavailable);
+        if (adapter == null) return info.context.getString(R.string.output_bluetooth_unavailable);
 
-        if(adapter.isEnabled()) {
+        if (adapter.isEnabled()) {
             adapter.disable();
             return info.context.getString(R.string.output_bluetooth) + " false";
         } else {

@@ -57,20 +57,23 @@ public class status implements CommandAbstraction {
             method.setAccessible(true);
 
             mobileOn = (Boolean) method.invoke(connManager);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
 //        brightness
         ContentResolver cResolver = pack.context.getApplicationContext().getContentResolver();
         int b = 0;
         try {
             b = Settings.System.getInt(cResolver, SCREEN_BRIGHTNESS);
-        } catch (Settings.SettingNotFoundException e) {}
+        } catch (Settings.SettingNotFoundException e) {
+        }
         b = b * 100 / 255;
 
         int autobrightnessState = Integer.MIN_VALUE;
         try {
             autobrightnessState = Settings.System.getInt(cResolver, SCREEN_BRIGHTNESS_MODE);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
 //        location
         LocationManager lm = (LocationManager) pack.context.getSystemService(Context.LOCATION_SERVICE);
@@ -79,16 +82,18 @@ public class status implements CommandAbstraction {
 
         try {
             gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch(Exception ex) {}
+        } catch (Exception ex) {
+        }
         try {
             network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch(Exception ex) {}
+        } catch (Exception ex) {
+        }
 
 //        bluetooth
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         boolean bluetoothOn;
 
-        if(adapter == null) bluetoothOn = false;
+        if (adapter == null) bluetoothOn = false;
         else bluetoothOn = adapter.isEnabled();
 
         StringBuilder builder = new StringBuilder();
@@ -103,8 +108,8 @@ public class status implements CommandAbstraction {
         // nfc
         NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(info.context.getApplicationContext());
 
-        if(nfcAdapter != null) {
-            builder.append(Tuils.NEWLINE).append(info.res.getString(R.string.nfc_label)).append(Tuils.SPACE).append( nfcAdapter.isEnabled());
+        if (nfcAdapter != null) {
+            builder.append(Tuils.NEWLINE).append(info.res.getString(R.string.nfc_label)).append(Tuils.SPACE).append(nfcAdapter.isEnabled());
         }
 
         return builder.toString();

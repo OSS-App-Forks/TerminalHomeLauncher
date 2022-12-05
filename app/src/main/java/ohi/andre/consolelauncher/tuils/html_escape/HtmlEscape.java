@@ -1,20 +1,20 @@
 /*
  * =============================================================================
- * 
+ *
  *   Copyright (c) 2014-2017, The UNBESCAPE team (http://www.unbescape.org)
- * 
+ *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
- * 
+ *
  * =============================================================================
  */
 package ohi.andre.consolelauncher.tuils.html_escape;
@@ -25,13 +25,13 @@ import java.io.Writer;
 
 /**
  * <p>
- *   Utility class for performing HTML escape/unescape operations.
+ * Utility class for performing HTML escape/unescape operations.
  * </p>
  *
  * <strong><u>Configuration of escape/unescape operations</u></strong>
  *
  * <p>
- *   <strong>Escape</strong> operations can be (optionally) configured by means of:
+ * <strong>Escape</strong> operations can be (optionally) configured by means of:
  * </p>
  * <ul>
  *   <li><em>Level</em>, which defines how deep the escape operation must be (what
@@ -139,23 +139,22 @@ import java.io.Writer;
  *       target="_blank">Supplementary characters in the Java Platform</a> [oracle.com]</li>
  * </ul>
  *
- *
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0.0
- *
  */
 public final class HtmlEscape {
 
 
-
+    private HtmlEscape() {
+        super();
+    }
 
     /**
      * <p>
-     *   Perform an HTML5 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>String</tt> input.
+     * Perform an HTML5 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   <em>Level 2</em> means this method will escape:
+     * <em>Level 2</em> means this method will escape:
      * </p>
      * <ul>
      *   <li>The five markup-significant characters: <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>,
@@ -183,34 +182,33 @@ public final class HtmlEscape {
      *
      * @param text the <tt>String</tt> to be escaped.
      * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
-     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
-     *         no additional <tt>String</tt> objects will be created during processing). Will
-     *         return <tt>null</tt> if input is <tt>null</tt>.
+     * same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     * no additional <tt>String</tt> objects will be created during processing). Will
+     * return <tt>null</tt> if input is <tt>null</tt>.
      */
     public static String escapeHtml5(final String text) {
         return escapeHtml(text, HtmlEscapeType.HTML5_NAMED_REFERENCES_DEFAULT_TO_DECIMAL,
                 HtmlEscapeLevel.LEVEL_2_ALL_NON_ASCII_PLUS_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML5 level 1 (XML-style) <strong>escape</strong> operation on a <tt>String</tt> input.
+     * Perform an HTML5 level 1 (XML-style) <strong>escape</strong> operation on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   <em>Level 1</em> means this method will only escape the five markup-significant characters:
-     *   <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
-     *   <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
-     *   <tt>&lt;c:out ... /&gt;</tt> tags.
+     * <em>Level 1</em> means this method will only escape the five markup-significant characters:
+     * <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
+     * <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
+     * <tt>&lt;c:out ... /&gt;</tt> tags.
      * </p>
      * <p>
-     *  Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml4Xml(String)} because
-     *  it will escape the apostrophe as <tt>&amp;apos;</tt>, whereas in HTML 4 such NCR does not exist
-     *  (the decimal numeric reference <tt>&amp;#39;</tt> is used instead).
+     * Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml4Xml(String)} because
+     * it will escape the apostrophe as <tt>&amp;apos;</tt>, whereas in HTML 4 such NCR does not exist
+     * (the decimal numeric reference <tt>&amp;#39;</tt> is used instead).
      * </p>
      * <p>
-     *   This method calls {@link #escapeHtml(String, HtmlEscapeType, HtmlEscapeLevel)} with the following
-     *   preconfigured values:
+     * This method calls {@link #escapeHtml(String, HtmlEscapeType, HtmlEscapeLevel)} with the following
+     * preconfigured values:
      * </p>
      * <ul>
      *   <li><tt>type</tt>:
@@ -224,22 +222,21 @@ public final class HtmlEscape {
      *
      * @param text the <tt>String</tt> to be escaped.
      * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
-     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
-     *         no additional <tt>String</tt> objects will be created during processing). Will
-     *         return <tt>null</tt> if input is <tt>null</tt>.
+     * same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     * no additional <tt>String</tt> objects will be created during processing). Will
+     * return <tt>null</tt> if input is <tt>null</tt>.
      */
     public static String escapeHtml5Xml(final String text) {
         return escapeHtml(text, HtmlEscapeType.HTML5_NAMED_REFERENCES_DEFAULT_TO_DECIMAL,
                 HtmlEscapeLevel.LEVEL_1_ONLY_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML 4 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>String</tt> input.
+     * Perform an HTML 4 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   <em>Level 2</em> means this method will escape:
+     * <em>Level 2</em> means this method will escape:
      * </p>
      * <ul>
      *   <li>The five markup-significant characters: <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>,
@@ -267,34 +264,33 @@ public final class HtmlEscape {
      *
      * @param text the <tt>String</tt> to be escaped.
      * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
-     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
-     *         no additional <tt>String</tt> objects will be created during processing). Will
-     *         return <tt>null</tt> if input is <tt>null</tt>.
+     * same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     * no additional <tt>String</tt> objects will be created during processing). Will
+     * return <tt>null</tt> if input is <tt>null</tt>.
      */
     public static String escapeHtml4(final String text) {
         return escapeHtml(text, HtmlEscapeType.HTML4_NAMED_REFERENCES_DEFAULT_TO_DECIMAL,
                 HtmlEscapeLevel.LEVEL_2_ALL_NON_ASCII_PLUS_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML 4 level 1 (XML-style) <strong>escape</strong> operation on a <tt>String</tt> input.
+     * Perform an HTML 4 level 1 (XML-style) <strong>escape</strong> operation on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   <em>Level 1</em> means this method will only escape the five markup-significant characters:
-     *   <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
-     *   <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
-     *   <tt>&lt;c:out ... /&gt;</tt> tags.
+     * <em>Level 1</em> means this method will only escape the five markup-significant characters:
+     * <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
+     * <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
+     * <tt>&lt;c:out ... /&gt;</tt> tags.
      * </p>
      * <p>
-     *  Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml5Xml(String)} because
-     *  it will escape the apostrophe as <tt>&amp;#39;</tt>, whereas in HTML5 there is a specific NCR for
-     *  such character (<tt>&amp;apos;</tt>).
+     * Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml5Xml(String)} because
+     * it will escape the apostrophe as <tt>&amp;#39;</tt>, whereas in HTML5 there is a specific NCR for
+     * such character (<tt>&amp;apos;</tt>).
      * </p>
      * <p>
-     *   This method calls {@link #escapeHtml(String, HtmlEscapeType, HtmlEscapeLevel)} with the following
-     *   preconfigured values:
+     * This method calls {@link #escapeHtml(String, HtmlEscapeType, HtmlEscapeLevel)} with the following
+     * preconfigured values:
      * </p>
      * <ul>
      *   <li><tt>type</tt>:
@@ -308,40 +304,39 @@ public final class HtmlEscape {
      *
      * @param text the <tt>String</tt> to be escaped.
      * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
-     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
-     *         no additional <tt>String</tt> objects will be created during processing). Will
-     *         return <tt>null</tt> if input is <tt>null</tt>.
+     * same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     * no additional <tt>String</tt> objects will be created during processing). Will
+     * return <tt>null</tt> if input is <tt>null</tt>.
      */
     public static String escapeHtml4Xml(final String text) {
         return escapeHtml(text, HtmlEscapeType.HTML4_NAMED_REFERENCES_DEFAULT_TO_DECIMAL,
                 HtmlEscapeLevel.LEVEL_1_ONLY_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform a (configurable) HTML <strong>escape</strong> operation on a <tt>String</tt> input.
+     * Perform a (configurable) HTML <strong>escape</strong> operation on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   This method will perform an escape operation according to the specified
-     *   {@link org.unbescape.html.HtmlEscapeType} and {@link org.unbescape.html.HtmlEscapeLevel}
-     *   argument values.
+     * This method will perform an escape operation according to the specified
+     * {@link org.unbescape.html.HtmlEscapeType} and {@link org.unbescape.html.HtmlEscapeLevel}
+     * argument values.
      * </p>
      * <p>
-     *   All other <tt>String</tt>-based <tt>escapeHtml*(...)</tt> methods call this one with preconfigured
-     *   <tt>type</tt> and <tt>level</tt> values.
+     * All other <tt>String</tt>-based <tt>escapeHtml*(...)</tt> methods call this one with preconfigured
+     * <tt>type</tt> and <tt>level</tt> values.
      * </p>
      * <p>
-     *   This method is <strong>thread-safe</strong>.
+     * This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>String</tt> to be escaped.
-     * @param type the type of escape operation to be performed, see {@link org.unbescape.html.HtmlEscapeType}.
+     * @param text  the <tt>String</tt> to be escaped.
+     * @param type  the type of escape operation to be performed, see {@link org.unbescape.html.HtmlEscapeType}.
      * @param level the escape level to be applied, see {@link org.unbescape.html.HtmlEscapeLevel}.
      * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
-     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
-     *         no additional <tt>String</tt> objects will be created during processing). Will
-     *         return <tt>null</tt> if input is <tt>null</tt>.
+     * same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     * no additional <tt>String</tt> objects will be created during processing). Will
+     * return <tt>null</tt> if input is <tt>null</tt>.
      */
     public static String escapeHtml(final String text, final HtmlEscapeType type, final HtmlEscapeLevel level) {
 
@@ -357,19 +352,13 @@ public final class HtmlEscape {
 
     }
 
-
-
-
-
-
-
     /**
      * <p>
-     *   Perform an HTML5 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>String</tt> input,
-     *   writing results to a <tt>Writer</tt>.
+     * Perform an HTML5 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>String</tt> input,
+     * writing results to a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   <em>Level 2</em> means this method will escape:
+     * <em>Level 2</em> means this method will escape:
      * </p>
      * <ul>
      *   <li>The five markup-significant characters: <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>,
@@ -395,11 +384,10 @@ public final class HtmlEscape {
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>String</tt> to be escaped.
+     * @param text   the <tt>String</tt> to be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void escapeHtml5(final String text, final Writer writer)
@@ -408,26 +396,25 @@ public final class HtmlEscape {
                 HtmlEscapeLevel.LEVEL_2_ALL_NON_ASCII_PLUS_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML5 level 1 (XML-style) <strong>escape</strong> operation on a <tt>String</tt> input,
-     *   writing results to a <tt>Writer</tt>.
+     * Perform an HTML5 level 1 (XML-style) <strong>escape</strong> operation on a <tt>String</tt> input,
+     * writing results to a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   <em>Level 1</em> means this method will only escape the five markup-significant characters:
-     *   <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
-     *   <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
-     *   <tt>&lt;c:out ... /&gt;</tt> tags.
+     * <em>Level 1</em> means this method will only escape the five markup-significant characters:
+     * <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
+     * <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
+     * <tt>&lt;c:out ... /&gt;</tt> tags.
      * </p>
      * <p>
-     *  Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml4Xml(String, Writer)} because
-     *  it will escape the apostrophe as <tt>&amp;apos;</tt>, whereas in HTML 4 such NCR does not exist
-     *  (the decimal numeric reference <tt>&amp;#39;</tt> is used instead).
+     * Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml4Xml(String, Writer)} because
+     * it will escape the apostrophe as <tt>&amp;apos;</tt>, whereas in HTML 4 such NCR does not exist
+     * (the decimal numeric reference <tt>&amp;#39;</tt> is used instead).
      * </p>
      * <p>
-     *   This method calls {@link #escapeHtml(String, Writer, HtmlEscapeType, HtmlEscapeLevel)} with the following
-     *   preconfigured values:
+     * This method calls {@link #escapeHtml(String, Writer, HtmlEscapeType, HtmlEscapeLevel)} with the following
+     * preconfigured values:
      * </p>
      * <ul>
      *   <li><tt>type</tt>:
@@ -439,11 +426,10 @@ public final class HtmlEscape {
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>String</tt> to be escaped.
+     * @param text   the <tt>String</tt> to be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void escapeHtml5Xml(final String text, final Writer writer)
@@ -452,14 +438,13 @@ public final class HtmlEscape {
                 HtmlEscapeLevel.LEVEL_1_ONLY_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML 4 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>String</tt> input,
-     *   writing results to a <tt>Writer</tt>.
+     * Perform an HTML 4 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>String</tt> input,
+     * writing results to a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   <em>Level 2</em> means this method will escape:
+     * <em>Level 2</em> means this method will escape:
      * </p>
      * <ul>
      *   <li>The five markup-significant characters: <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>,
@@ -485,11 +470,10 @@ public final class HtmlEscape {
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>String</tt> to be escaped.
+     * @param text   the <tt>String</tt> to be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void escapeHtml4(final String text, final Writer writer)
@@ -498,26 +482,25 @@ public final class HtmlEscape {
                 HtmlEscapeLevel.LEVEL_2_ALL_NON_ASCII_PLUS_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML 4 level 1 (XML-style) <strong>escape</strong> operation on a <tt>String</tt> input,
-     *   writing results to a <tt>Writer</tt>.
+     * Perform an HTML 4 level 1 (XML-style) <strong>escape</strong> operation on a <tt>String</tt> input,
+     * writing results to a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   <em>Level 1</em> means this method will only escape the five markup-significant characters:
-     *   <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
-     *   <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
-     *   <tt>&lt;c:out ... /&gt;</tt> tags.
+     * <em>Level 1</em> means this method will only escape the five markup-significant characters:
+     * <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
+     * <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
+     * <tt>&lt;c:out ... /&gt;</tt> tags.
      * </p>
      * <p>
-     *  Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml5Xml(String, Writer)} because
-     *  it will escape the apostrophe as <tt>&amp;#39;</tt>, whereas in HTML5 there is a specific NCR for
-     *  such character (<tt>&amp;apos;</tt>).
+     * Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml5Xml(String, Writer)} because
+     * it will escape the apostrophe as <tt>&amp;#39;</tt>, whereas in HTML5 there is a specific NCR for
+     * such character (<tt>&amp;apos;</tt>).
      * </p>
      * <p>
-     *   This method calls {@link #escapeHtml(String, Writer, HtmlEscapeType, HtmlEscapeLevel)} with the following
-     *   preconfigured values:
+     * This method calls {@link #escapeHtml(String, Writer, HtmlEscapeType, HtmlEscapeLevel)} with the following
+     * preconfigured values:
      * </p>
      * <ul>
      *   <li><tt>type</tt>:
@@ -529,11 +512,10 @@ public final class HtmlEscape {
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>String</tt> to be escaped.
+     * @param text   the <tt>String</tt> to be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void escapeHtml4Xml(final String text, final Writer writer)
@@ -542,32 +524,30 @@ public final class HtmlEscape {
                 HtmlEscapeLevel.LEVEL_1_ONLY_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform a (configurable) HTML <strong>escape</strong> operation on a <tt>String</tt> input, writing
-     *   results to a <tt>Writer</tt>.
+     * Perform a (configurable) HTML <strong>escape</strong> operation on a <tt>String</tt> input, writing
+     * results to a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   This method will perform an escape operation according to the specified
-     *   {@link org.unbescape.html.HtmlEscapeType} and {@link org.unbescape.html.HtmlEscapeLevel}
-     *   argument values.
+     * This method will perform an escape operation according to the specified
+     * {@link org.unbescape.html.HtmlEscapeType} and {@link org.unbescape.html.HtmlEscapeLevel}
+     * argument values.
      * </p>
      * <p>
-     *   All other <tt>String</tt>/<tt>Writer</tt>-based <tt>escapeHtml*(...)</tt> methods call this one with preconfigured
-     *   <tt>type</tt> and <tt>level</tt> values.
+     * All other <tt>String</tt>/<tt>Writer</tt>-based <tt>escapeHtml*(...)</tt> methods call this one with preconfigured
+     * <tt>type</tt> and <tt>level</tt> values.
      * </p>
      * <p>
-     *   This method is <strong>thread-safe</strong>.
+     * This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>String</tt> to be escaped.
+     * @param text   the <tt>String</tt> to be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
-     * @param type the type of escape operation to be performed, see {@link org.unbescape.html.HtmlEscapeType}.
-     * @param level the escape level to be applied, see {@link org.unbescape.html.HtmlEscapeLevel}.
+     * @param type   the type of escape operation to be performed, see {@link org.unbescape.html.HtmlEscapeType}.
+     * @param level  the escape level to be applied, see {@link org.unbescape.html.HtmlEscapeLevel}.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void escapeHtml(final String text, final Writer writer, final HtmlEscapeType type, final HtmlEscapeLevel level)
@@ -589,19 +569,13 @@ public final class HtmlEscape {
 
     }
 
-
-
-
-
-
-
     /**
      * <p>
-     *   Perform an HTML5 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>Reader</tt> input,
-     *   writing results to a <tt>Writer</tt>.
+     * Perform an HTML5 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>Reader</tt> input,
+     * writing results to a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   <em>Level 2</em> means this method will escape:
+     * <em>Level 2</em> means this method will escape:
      * </p>
      * <ul>
      *   <li>The five markup-significant characters: <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>,
@@ -631,7 +605,6 @@ public final class HtmlEscape {
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void escapeHtml5(final Reader reader, final Writer writer)
@@ -640,26 +613,25 @@ public final class HtmlEscape {
                 HtmlEscapeLevel.LEVEL_2_ALL_NON_ASCII_PLUS_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML5 level 1 (XML-style) <strong>escape</strong> operation on a <tt>Reader</tt> input,
-     *   writing results to a <tt>Writer</tt>.
+     * Perform an HTML5 level 1 (XML-style) <strong>escape</strong> operation on a <tt>Reader</tt> input,
+     * writing results to a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   <em>Level 1</em> means this method will only escape the five markup-significant characters:
-     *   <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
-     *   <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
-     *   <tt>&lt;c:out ... /&gt;</tt> tags.
+     * <em>Level 1</em> means this method will only escape the five markup-significant characters:
+     * <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
+     * <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
+     * <tt>&lt;c:out ... /&gt;</tt> tags.
      * </p>
      * <p>
-     *  Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml4Xml(Reader, Writer)} because
-     *  it will escape the apostrophe as <tt>&amp;apos;</tt>, whereas in HTML 4 such NCR does not exist
-     *  (the decimal numeric reference <tt>&amp;#39;</tt> is used instead).
+     * Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml4Xml(Reader, Writer)} because
+     * it will escape the apostrophe as <tt>&amp;apos;</tt>, whereas in HTML 4 such NCR does not exist
+     * (the decimal numeric reference <tt>&amp;#39;</tt> is used instead).
      * </p>
      * <p>
-     *   This method calls {@link #escapeHtml(Reader, Writer, HtmlEscapeType, HtmlEscapeLevel)} with the following
-     *   preconfigured values:
+     * This method calls {@link #escapeHtml(Reader, Writer, HtmlEscapeType, HtmlEscapeLevel)} with the following
+     * preconfigured values:
      * </p>
      * <ul>
      *   <li><tt>type</tt>:
@@ -675,7 +647,6 @@ public final class HtmlEscape {
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void escapeHtml5Xml(final Reader reader, final Writer writer)
@@ -684,14 +655,13 @@ public final class HtmlEscape {
                 HtmlEscapeLevel.LEVEL_1_ONLY_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML 4 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>Reader</tt> input,
-     *   writing results to a <tt>Writer</tt>.
+     * Perform an HTML 4 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>Reader</tt> input,
+     * writing results to a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   <em>Level 2</em> means this method will escape:
+     * <em>Level 2</em> means this method will escape:
      * </p>
      * <ul>
      *   <li>The five markup-significant characters: <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>,
@@ -721,7 +691,6 @@ public final class HtmlEscape {
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void escapeHtml4(final Reader reader, final Writer writer)
@@ -730,26 +699,25 @@ public final class HtmlEscape {
                 HtmlEscapeLevel.LEVEL_2_ALL_NON_ASCII_PLUS_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML 4 level 1 (XML-style) <strong>escape</strong> operation on a <tt>Reader</tt> input,
-     *   writing results to a <tt>Writer</tt>.
+     * Perform an HTML 4 level 1 (XML-style) <strong>escape</strong> operation on a <tt>Reader</tt> input,
+     * writing results to a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   <em>Level 1</em> means this method will only escape the five markup-significant characters:
-     *   <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
-     *   <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
-     *   <tt>&lt;c:out ... /&gt;</tt> tags.
+     * <em>Level 1</em> means this method will only escape the five markup-significant characters:
+     * <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
+     * <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
+     * <tt>&lt;c:out ... /&gt;</tt> tags.
      * </p>
      * <p>
-     *  Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml5Xml(Reader, Writer)} because
-     *  it will escape the apostrophe as <tt>&amp;#39;</tt>, whereas in HTML5 there is a specific NCR for
-     *  such character (<tt>&amp;apos;</tt>).
+     * Note this method may <strong>not</strong> produce the same results as {@link #escapeHtml5Xml(Reader, Writer)} because
+     * it will escape the apostrophe as <tt>&amp;#39;</tt>, whereas in HTML5 there is a specific NCR for
+     * such character (<tt>&amp;apos;</tt>).
      * </p>
      * <p>
-     *   This method calls {@link #escapeHtml(Reader, Writer, HtmlEscapeType, HtmlEscapeLevel)} with the following
-     *   preconfigured values:
+     * This method calls {@link #escapeHtml(Reader, Writer, HtmlEscapeType, HtmlEscapeLevel)} with the following
+     * preconfigured values:
      * </p>
      * <ul>
      *   <li><tt>type</tt>:
@@ -765,7 +733,6 @@ public final class HtmlEscape {
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void escapeHtml4Xml(final Reader reader, final Writer writer)
@@ -774,32 +741,30 @@ public final class HtmlEscape {
                 HtmlEscapeLevel.LEVEL_1_ONLY_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform a (configurable) HTML <strong>escape</strong> operation on a <tt>Reader</tt> input, writing
-     *   results to a <tt>Writer</tt>.
+     * Perform a (configurable) HTML <strong>escape</strong> operation on a <tt>Reader</tt> input, writing
+     * results to a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   This method will perform an escape operation according to the specified
-     *   {@link org.unbescape.html.HtmlEscapeType} and {@link org.unbescape.html.HtmlEscapeLevel}
-     *   argument values.
+     * This method will perform an escape operation according to the specified
+     * {@link org.unbescape.html.HtmlEscapeType} and {@link org.unbescape.html.HtmlEscapeLevel}
+     * argument values.
      * </p>
      * <p>
-     *   All other <tt>Reader</tt>/<tt>Writer</tt>-based <tt>escapeHtml*(...)</tt> methods call this one with preconfigured
-     *   <tt>type</tt> and <tt>level</tt> values.
+     * All other <tt>Reader</tt>/<tt>Writer</tt>-based <tt>escapeHtml*(...)</tt> methods call this one with preconfigured
+     * <tt>type</tt> and <tt>level</tt> values.
      * </p>
      * <p>
-     *   This method is <strong>thread-safe</strong>.
+     * This method is <strong>thread-safe</strong>.
      * </p>
      *
      * @param reader the <tt>Reader</tt> reading the text to be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
-     * @param type the type of escape operation to be performed, see {@link org.unbescape.html.HtmlEscapeType}.
-     * @param level the escape level to be applied, see {@link org.unbescape.html.HtmlEscapeLevel}.
+     * @param type   the type of escape operation to be performed, see {@link org.unbescape.html.HtmlEscapeType}.
+     * @param level  the escape level to be applied, see {@link org.unbescape.html.HtmlEscapeLevel}.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void escapeHtml(final Reader reader, final Writer writer, final HtmlEscapeType type, final HtmlEscapeLevel level)
@@ -821,18 +786,12 @@ public final class HtmlEscape {
 
     }
 
-
-
-
-
-
-
     /**
      * <p>
-     *   Perform an HTML5 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>char[]</tt> input.
+     * Perform an HTML5 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>char[]</tt> input.
      * </p>
      * <p>
-     *   <em>Level 2</em> means this method will escape:
+     * <em>Level 2</em> means this method will escape:
      * </p>
      * <ul>
      *   <li>The five markup-significant characters: <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>,
@@ -858,39 +817,38 @@ public final class HtmlEscape {
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>char[]</tt> to be escaped.
+     * @param text   the <tt>char[]</tt> to be escaped.
      * @param offset the position in <tt>text</tt> at which the escape operation should start.
-     * @param len the number of characters in <tt>text</tt> that should be escaped.
+     * @param len    the number of characters in <tt>text</tt> that should be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
      */
     public static void escapeHtml5(final char[] text, final int offset, final int len, final Writer writer)
-                                   throws IOException {
+            throws IOException {
         escapeHtml(text, offset, len, writer, HtmlEscapeType.HTML5_NAMED_REFERENCES_DEFAULT_TO_DECIMAL,
                 HtmlEscapeLevel.LEVEL_2_ALL_NON_ASCII_PLUS_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML5 level 1 (XML-style) <strong>escape</strong> operation on a <tt>char[]</tt> input.
+     * Perform an HTML5 level 1 (XML-style) <strong>escape</strong> operation on a <tt>char[]</tt> input.
      * </p>
      * <p>
-     *   <em>Level 1</em> means this method will only escape the five markup-significant characters:
-     *   <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
-     *   <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
-     *   <tt>&lt;c:out ... /&gt;</tt> tags.
+     * <em>Level 1</em> means this method will only escape the five markup-significant characters:
+     * <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
+     * <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
+     * <tt>&lt;c:out ... /&gt;</tt> tags.
      * </p>
      * <p>
-     *  Note this method may <strong>not</strong> produce the same results as
-     *  {@link #escapeHtml4Xml(char[], int, int, Writer)} because
-     *  it will escape the apostrophe as <tt>&amp;apos;</tt>, whereas in HTML 4 such NCR does not exist
-     *  (the decimal numeric reference <tt>&amp;#39;</tt> is used instead).
+     * Note this method may <strong>not</strong> produce the same results as
+     * {@link #escapeHtml4Xml(char[], int, int, Writer)} because
+     * it will escape the apostrophe as <tt>&amp;apos;</tt>, whereas in HTML 4 such NCR does not exist
+     * (the decimal numeric reference <tt>&amp;#39;</tt> is used instead).
      * </p>
      * <p>
-     *   This method calls {@link #escapeHtml(char[], int, int, Writer, HtmlEscapeType, HtmlEscapeLevel)}
-     *   with the following preconfigured values:
+     * This method calls {@link #escapeHtml(char[], int, int, Writer, HtmlEscapeType, HtmlEscapeLevel)}
+     * with the following preconfigured values:
      * </p>
      * <ul>
      *   <li><tt>type</tt>:
@@ -902,26 +860,25 @@ public final class HtmlEscape {
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>char[]</tt> to be escaped.
+     * @param text   the <tt>char[]</tt> to be escaped.
      * @param offset the position in <tt>text</tt> at which the escape operation should start.
-     * @param len the number of characters in <tt>text</tt> that should be escaped.
+     * @param len    the number of characters in <tt>text</tt> that should be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
      */
     public static void escapeHtml5Xml(final char[] text, final int offset, final int len, final Writer writer)
-                                      throws IOException {
+            throws IOException {
         escapeHtml(text, offset, len, writer, HtmlEscapeType.HTML5_NAMED_REFERENCES_DEFAULT_TO_DECIMAL,
                 HtmlEscapeLevel.LEVEL_1_ONLY_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML 4 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>char[]</tt> input.
+     * Perform an HTML 4 level 2 (result is ASCII) <strong>escape</strong> operation on a <tt>char[]</tt> input.
      * </p>
      * <p>
-     *   <em>Level 2</em> means this method will escape:
+     * <em>Level 2</em> means this method will escape:
      * </p>
      * <ul>
      *   <li>The five markup-significant characters: <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>,
@@ -947,38 +904,37 @@ public final class HtmlEscape {
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>char[]</tt> to be escaped.
+     * @param text   the <tt>char[]</tt> to be escaped.
      * @param offset the position in <tt>text</tt> at which the escape operation should start.
-     * @param len the number of characters in <tt>text</tt> that should be escaped.
+     * @param len    the number of characters in <tt>text</tt> that should be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
      */
     public static void escapeHtml4(final char[] text, final int offset, final int len, final Writer writer)
-                                   throws IOException {
+            throws IOException {
         escapeHtml(text, offset, len, writer, HtmlEscapeType.HTML4_NAMED_REFERENCES_DEFAULT_TO_DECIMAL,
                 HtmlEscapeLevel.LEVEL_2_ALL_NON_ASCII_PLUS_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform an HTML 4 level 1 (XML-style) <strong>escape</strong> operation on a <tt>char[]</tt> input.
+     * Perform an HTML 4 level 1 (XML-style) <strong>escape</strong> operation on a <tt>char[]</tt> input.
      * </p>
      * <p>
-     *   <em>Level 1</em> means this method will only escape the five markup-significant characters:
-     *   <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
-     *   <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
-     *   <tt>&lt;c:out ... /&gt;</tt> tags.
+     * <em>Level 1</em> means this method will only escape the five markup-significant characters:
+     * <tt>&lt;</tt>, <tt>&gt;</tt>, <tt>&amp;</tt>, <tt>&quot;</tt> and <tt>&#39;</tt>. It is called
+     * <em>XML-style</em> in order to link it with JSP's <tt>escapeXml</tt> attribute in JSTL's
+     * <tt>&lt;c:out ... /&gt;</tt> tags.
      * </p>
      * <p>
-     *  Note this method may <strong>not</strong> produce the same results as
-     *  {@link #escapeHtml5Xml(char[], int, int, Writer)}  because it will escape the apostrophe as
-     *  <tt>&amp;#39;</tt>, whereas in HTML5 there is a specific NCR for such character (<tt>&amp;apos;</tt>).
+     * Note this method may <strong>not</strong> produce the same results as
+     * {@link #escapeHtml5Xml(char[], int, int, Writer)}  because it will escape the apostrophe as
+     * <tt>&amp;#39;</tt>, whereas in HTML5 there is a specific NCR for such character (<tt>&amp;apos;</tt>).
      * </p>
      * <p>
-     *   This method calls {@link #escapeHtml(char[], int, int, Writer, HtmlEscapeType, HtmlEscapeLevel)}
-     *   with the following preconfigured values:
+     * This method calls {@link #escapeHtml(char[], int, int, Writer, HtmlEscapeType, HtmlEscapeLevel)}
+     * with the following preconfigured values:
      * </p>
      * <ul>
      *   <li><tt>type</tt>:
@@ -990,49 +946,48 @@ public final class HtmlEscape {
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>char[]</tt> to be escaped.
+     * @param text   the <tt>char[]</tt> to be escaped.
      * @param offset the position in <tt>text</tt> at which the escape operation should start.
-     * @param len the number of characters in <tt>text</tt> that should be escaped.
+     * @param len    the number of characters in <tt>text</tt> that should be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
      */
     public static void escapeHtml4Xml(final char[] text, final int offset, final int len, final Writer writer)
-                                      throws IOException {
+            throws IOException {
         escapeHtml(text, offset, len, writer, HtmlEscapeType.HTML4_NAMED_REFERENCES_DEFAULT_TO_DECIMAL,
                 HtmlEscapeLevel.LEVEL_1_ONLY_MARKUP_SIGNIFICANT);
     }
 
-
     /**
      * <p>
-     *   Perform a (configurable) HTML <strong>escape</strong> operation on a <tt>char[]</tt> input.
+     * Perform a (configurable) HTML <strong>escape</strong> operation on a <tt>char[]</tt> input.
      * </p>
      * <p>
-     *   This method will perform an escape operation according to the specified
-     *   {@link org.unbescape.html.HtmlEscapeType} and {@link org.unbescape.html.HtmlEscapeLevel}
-     *   argument values.
+     * This method will perform an escape operation according to the specified
+     * {@link org.unbescape.html.HtmlEscapeType} and {@link org.unbescape.html.HtmlEscapeLevel}
+     * argument values.
      * </p>
      * <p>
-     *   All other <tt>char[]</tt>-based <tt>escapeHtml*(...)</tt> methods call this one with preconfigured
-     *   <tt>type</tt> and <tt>level</tt> values.
+     * All other <tt>char[]</tt>-based <tt>escapeHtml*(...)</tt> methods call this one with preconfigured
+     * <tt>type</tt> and <tt>level</tt> values.
      * </p>
      * <p>
-     *   This method is <strong>thread-safe</strong>.
+     * This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>char[]</tt> to be escaped.
+     * @param text   the <tt>char[]</tt> to be escaped.
      * @param offset the position in <tt>text</tt> at which the escape operation should start.
-     * @param len the number of characters in <tt>text</tt> that should be escaped.
+     * @param len    the number of characters in <tt>text</tt> that should be escaped.
      * @param writer the <tt>java.io.Writer</tt> to which the escaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
-     * @param type the type of escape operation to be performed, see {@link org.unbescape.html.HtmlEscapeType}.
-     * @param level the escape level to be applied, see {@link org.unbescape.html.HtmlEscapeLevel}.
+     * @param type   the type of escape operation to be performed, see {@link org.unbescape.html.HtmlEscapeType}.
+     * @param level  the escape level to be applied, see {@link org.unbescape.html.HtmlEscapeLevel}.
      * @throws IOException if an input/output exception occurs
      */
     public static void escapeHtml(final char[] text, final int offset, final int len, final Writer writer,
                                   final HtmlEscapeType type, final HtmlEscapeLevel level)
-                                  throws IOException {
+            throws IOException {
 
         if (writer == null) {
             throw new IllegalArgumentException("Argument 'writer' cannot be null");
@@ -1046,7 +1001,7 @@ public final class HtmlEscape {
             throw new IllegalArgumentException("The 'level' argument cannot be null");
         }
 
-        final int textLen = (text == null? 0 : text.length);
+        final int textLen = (text == null ? 0 : text.length);
 
         if (offset < 0 || offset > textLen) {
             throw new IllegalArgumentException(
@@ -1062,29 +1017,24 @@ public final class HtmlEscape {
 
     }
 
-
-
-
-
-
     /**
      * <p>
-     *   Perform an HTML <strong>unescape</strong> operation on a <tt>String</tt> input.
+     * Perform an HTML <strong>unescape</strong> operation on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   No additional configuration arguments are required. Unescape operations
-     *   will always perform <em>complete</em> unescape of NCRs (whole HTML5 set supported), decimal
-     *   and hexadecimal references.
+     * No additional configuration arguments are required. Unescape operations
+     * will always perform <em>complete</em> unescape of NCRs (whole HTML5 set supported), decimal
+     * and hexadecimal references.
      * </p>
      * <p>
-     *   This method is <strong>thread-safe</strong>.
+     * This method is <strong>thread-safe</strong>.
      * </p>
      *
      * @param text the <tt>String</tt> to be unescaped.
      * @return The unescaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
-     *         same object as the <tt>text</tt> input argument if no unescaping modifications were required (and
-     *         no additional <tt>String</tt> objects will be created during processing). Will
-     *         return <tt>null</tt> if input is <tt>null</tt>.
+     * same object as the <tt>text</tt> input argument if no unescaping modifications were required (and
+     * no additional <tt>String</tt> objects will be created during processing). Will
+     * return <tt>null</tt> if input is <tt>null</tt>.
      */
     public static String unescapeHtml(final String text) {
         if (text == null) {
@@ -1097,27 +1047,24 @@ public final class HtmlEscape {
         return HtmlEscapeUtil.unescape(text);
     }
 
-
-
     /**
      * <p>
-     *   Perform an HTML <strong>unescape</strong> operation on a <tt>String</tt> input, writing results to
-     *   a <tt>Writer</tt>.
+     * Perform an HTML <strong>unescape</strong> operation on a <tt>String</tt> input, writing results to
+     * a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   No additional configuration arguments are required. Unescape operations
-     *   will always perform <em>complete</em> unescape of NCRs (whole HTML5 set supported), decimal
-     *   and hexadecimal references.
+     * No additional configuration arguments are required. Unescape operations
+     * will always perform <em>complete</em> unescape of NCRs (whole HTML5 set supported), decimal
+     * and hexadecimal references.
      * </p>
      * <p>
-     *   This method is <strong>thread-safe</strong>.
+     * This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>String</tt> to be unescaped.
+     * @param text   the <tt>String</tt> to be unescaped.
      * @param writer the <tt>java.io.Writer</tt> to which the unescaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void unescapeHtml(final String text, final Writer writer)
@@ -1139,27 +1086,24 @@ public final class HtmlEscape {
 
     }
 
-
-
     /**
      * <p>
-     *   Perform an HTML <strong>unescape</strong> operation on a <tt>Reader</tt> input, writing results to
-     *   a <tt>Writer</tt>.
+     * Perform an HTML <strong>unescape</strong> operation on a <tt>Reader</tt> input, writing results to
+     * a <tt>Writer</tt>.
      * </p>
      * <p>
-     *   No additional configuration arguments are required. Unescape operations
-     *   will always perform <em>complete</em> unescape of NCRs (whole HTML5 set supported), decimal
-     *   and hexadecimal references.
+     * No additional configuration arguments are required. Unescape operations
+     * will always perform <em>complete</em> unescape of NCRs (whole HTML5 set supported), decimal
+     * and hexadecimal references.
      * </p>
      * <p>
-     *   This method is <strong>thread-safe</strong>.
+     * This method is <strong>thread-safe</strong>.
      * </p>
      *
      * @param reader the <tt>Reader</tt> reading the text to be unescaped.
      * @param writer the <tt>java.io.Writer</tt> to which the unescaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
-     *
      * @since 1.1.2
      */
     public static void unescapeHtml(final Reader reader, final Writer writer)
@@ -1173,36 +1117,34 @@ public final class HtmlEscape {
 
     }
 
-
-
     /**
      * <p>
-     *   Perform an HTML <strong>unescape</strong> operation on a <tt>char[]</tt> input.
+     * Perform an HTML <strong>unescape</strong> operation on a <tt>char[]</tt> input.
      * </p>
      * <p>
-     *   No additional configuration arguments are required. Unescape operations
-     *   will always perform <em>complete</em> unescape of NCRs (whole HTML5 set supported), decimal
-     *   and hexadecimal references.
+     * No additional configuration arguments are required. Unescape operations
+     * will always perform <em>complete</em> unescape of NCRs (whole HTML5 set supported), decimal
+     * and hexadecimal references.
      * </p>
      * <p>
-     *   This method is <strong>thread-safe</strong>.
+     * This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <tt>char[]</tt> to be unescaped.
+     * @param text   the <tt>char[]</tt> to be unescaped.
      * @param offset the position in <tt>text</tt> at which the unescape operation should start.
-     * @param len the number of characters in <tt>text</tt> that should be unescaped.
+     * @param len    the number of characters in <tt>text</tt> that should be unescaped.
      * @param writer the <tt>java.io.Writer</tt> to which the unescaped result will be written. Nothing will
      *               be written at all to this writer if input is <tt>null</tt>.
      * @throws IOException if an input/output exception occurs
      */
     public static void unescapeHtml(final char[] text, final int offset, final int len, final Writer writer)
-                                    throws IOException{
+            throws IOException {
 
         if (writer == null) {
             throw new IllegalArgumentException("Argument 'writer' cannot be null");
         }
 
-        final int textLen = (text == null? 0 : text.length);
+        final int textLen = (text == null ? 0 : text.length);
 
         if (offset < 0 || offset > textLen) {
             throw new IllegalArgumentException(
@@ -1218,15 +1160,6 @@ public final class HtmlEscape {
 
     }
 
-
-
-
-    private HtmlEscape() {
-        super();
-    }
-
-
-
     /*
      * This is basically a very simplified, thread-unsafe version of StringReader that should
      * perform better than the original StringReader by removing all synchronization structures.
@@ -1236,8 +1169,8 @@ public final class HtmlEscape {
      */
     private static final class InternalStringReader extends Reader {
 
-        private String str;
         private final int length;
+        private String str;
         private int next = 0;
 
         public InternalStringReader(final String s) {

@@ -35,24 +35,15 @@ public class TuiLocationManager {
     public static final String LATITUDE = "lat", LONGITUDE = "long", FAIL = "fail";
 
     private static final int MAX_DELAY = 10000;
-
-    Context context;
-    BroadcastReceiver receiver;
-
-    LocationListener locationListener;
-
-    Handler handler;
-
+    private static TuiLocationManager instance;
+    private final List<String> actionsPool;
     public boolean locationAvailable = false;
     public double latitude, longitude;
-
-    private final List<String> actionsPool;
-
-    private static TuiLocationManager instance;
-    public static TuiLocationManager instance(Context context) {
-        if(instance == null) instance = new TuiLocationManager(context);
-        return instance;
-    }
+    Context context;
+    BroadcastReceiver receiver;
+    LocationListener locationListener;
+    Handler handler;
+    private boolean registered = false;
 
     private TuiLocationManager(final Context context) {
         this.context = context;
@@ -70,7 +61,7 @@ public class TuiLocationManager {
 
                 LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context.getApplicationContext());
 
-                for(String s : actionsPool) {
+                for (String s : actionsPool) {
                     Intent i = new Intent(s);
                     i.putExtra(LATITUDE, location.getLatitude());
                     i.putExtra(LONGITUDE, location.getLongitude());
@@ -99,7 +90,7 @@ public class TuiLocationManager {
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
 
-                if(action.equals(ACTION_GOT_PERMISSION)) {
+                if (action.equals(ACTION_GOT_PERMISSION)) {
                     if (intent.getIntExtra(XMLPrefsManager.VALUE_ATTRIBUTE, 1) == PackageManager.PERMISSION_GRANTED) {
                         register();
                     }
@@ -113,17 +104,25 @@ public class TuiLocationManager {
         LocalBroadcastManager.getInstance(context.getApplicationContext()).registerReceiver(receiver, filter);
     }
 
-    private boolean registered = false;
+    public static TuiLocationManager instance(Context context) {
+        if (instance == null) instance = new TuiLocationManager(context);
+        return instance;
+    }
+
+    public static void disposeStatic() {
+        if (instance != null) instance.dispose();
+        instance = null;
+    }
 
     @SuppressLint("MissingPermission")
     private void register() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) context, new String[] {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LauncherActivity.LOCATION_REQUEST_PERMISSION);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LauncherActivity.LOCATION_REQUEST_PERMISSION);
             return;
         }
 
-        if(registered) return;
+        if (registered) return;
         registered = true;
 
         Criteria c = new Criteria();
@@ -151,7 +150,7 @@ public class TuiLocationManager {
             public void run() {
                 LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context.getApplicationContext());
 
-                for(String s : actionsPool) {
+                for (String s : actionsPool) {
                     Intent i = new Intent(s);
                     i.putExtra(FAIL, true);
                     localBroadcastManager.sendBroadcast(i);
@@ -177,18 +176,13 @@ public class TuiLocationManager {
         LocalBroadcastManager.getInstance(context.getApplicationContext()).unregisterReceiver(receiver);
 
         LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if(manager != null) manager.removeUpdates(locationListener);
+        if (manager != null) manager.removeUpdates(locationListener);
 
         clearHandler();
     }
 
-    public static void disposeStatic() {
-        if(instance != null) instance.dispose();
-        instance = null;
-    }
-
     private void clearHandler() {
-        if(handler != null) {
+        if (handler != null) {
             handler.removeCallbacksAndMessages(null);
             handler = null;
         }

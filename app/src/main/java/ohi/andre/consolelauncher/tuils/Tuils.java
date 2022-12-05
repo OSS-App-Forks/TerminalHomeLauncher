@@ -118,15 +118,28 @@ public class Tuils {
     public static final String TRIBLE_SPACE = "   ";
     public static final String DOT = ".";
     public static final String EMPTYSTRING = "";
-    private static final String TUI_FOLDER = "t-ui";
     public static final String MINUS = "-";
-
+    public static final int TERA = 0;
+    public static final int GIGA = 1;
+    public static final int MEGA = 2;
+    public static final int KILO = 3;
+    public static final int BYTE = 4;
+    private static final String TUI_FOLDER = "t-ui";
+    private static final View.OnClickListener deepClickListener = v -> Tuils.log(v.toString());
+    private static final long total = -1;
+    private static final int FILEUPDATE_DELAY = 100;
+    private static final String SPACE_REGEXP = "\\s";
     public static Pattern patternNewline = Pattern.compile("%n", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
-
-    private static Typeface globalTypeface = null;
     public static String fontPath = null;
-
     static Pattern calculusPattern = Pattern.compile("([\\+\\-\\*\\/\\^])(\\d+\\.?\\d*)");
+    static Pattern pd = Pattern.compile("%d", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
+    static Pattern pu = Pattern.compile("%u", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
+    static Pattern pp = Pattern.compile("%p", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
+    static Pattern unnecessarySpaces = Pattern.compile("\\s{2,}");
+    private static Typeface globalTypeface = null;
+    private static OnBatteryUpdate batteryUpdate;
+    private static BroadcastReceiver batteryReceiver = null;
+    private static File folder = null;
 
     public static double textCalculus(double input, String text) {
         Matcher m = calculusPattern.matcher(text);
@@ -259,9 +272,6 @@ public class Tuils {
         initialReader.close();
         return buffer.toString();
     }
-
-    private static OnBatteryUpdate batteryUpdate;
-    private static BroadcastReceiver batteryReceiver = null;
 
     public static void registerBatteryReceiver(Context context, OnBatteryUpdate listener) {
         try {
@@ -448,138 +458,6 @@ public class Tuils {
         }
     }
 
-    public static double getTotalExternalMemorySize(int unit) {
-        try {
-            return getTotaleSpace(XMLPrefsManager.get(File.class, Behavior.external_storage_path), unit);
-        } catch (Exception e) {
-            return -1;
-        }
-    }
-
-    public static double getAvailableSpace(File dir, int unit) {
-        if (dir == null) return -1;
-
-        StatFs statFs = new StatFs(dir.getAbsolutePath());
-        long blocks = statFs.getAvailableBlocks();
-        return formatSize(blocks * statFs.getBlockSize(), unit);
-    }
-
-    public static double getTotaleSpace(File dir, int unit) {
-        if (dir == null) return -1;
-
-        StatFs statFs = new StatFs(dir.getAbsolutePath());
-        long blocks = statFs.getBlockCount();
-        return formatSize(blocks * statFs.getBlockSize(), unit);
-    }
-
-    public static double percentage(double part, double total) {
-        return round(part * 100 / total, 2);
-    }
-
-    public static double formatSize(long bytes, int unit) {
-        double convert = 1048576.0;
-        double smallConvert = 1024.0;
-
-        double result;
-
-        switch (unit) {
-            case TERA:
-                result = (bytes / convert) / convert;
-                break;
-            case GIGA:
-                result = (bytes / convert) / smallConvert;
-                break;
-            case MEGA:
-                result = bytes / convert;
-                break;
-            case KILO:
-                result = bytes / smallConvert;
-                break;
-            case BYTE:
-                result = bytes;
-                break;
-            default:
-                return -1;
-        }
-
-        return round(result, 2);
-    }
-
-    public static boolean isMyLauncherDefault(PackageManager packageManager) {
-        final IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
-        filter.addCategory(Intent.CATEGORY_HOME);
-
-        List<IntentFilter> filters = new ArrayList<>();
-        filters.add(filter);
-
-        final String myPackageName = BuildConfig.APPLICATION_ID;
-        List<ComponentName> activities = new ArrayList<>();
-
-        // You can use name of your package here as third argument
-        packageManager.getPreferredActivities(filters, activities, null);
-
-        for (ComponentName activity : activities) {
-            if (myPackageName.equals(activity.getPackageName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    public static SpannableString span(CharSequence text, int color) {
-        return span(null, text, color, Integer.MAX_VALUE);
-    }
-
-    public static SpannableString span(Context context, int size, CharSequence text) {
-        return span(context, text, Integer.MAX_VALUE, size);
-    }
-
-    public static SpannableString span(Context context, CharSequence text, int color, int size) {
-        return span(context, Integer.MAX_VALUE, color, text, size);
-    }
-
-    public static SpannableString span(int bgColor, int foreColor, CharSequence text) {
-        return span(null, bgColor, foreColor, text, Integer.MAX_VALUE);
-    }
-
-    public static SpannableString span(Context context, int bgColor, int foreColor, CharSequence text, int size) {
-        if (text == null) {
-            text = Tuils.EMPTYSTRING;
-        }
-
-        SpannableString spannableString;
-        if (text instanceof SpannableString) spannableString = (SpannableString) text;
-        else spannableString = new SpannableString(text);
-
-        if (size != Integer.MAX_VALUE && context != null)
-            spannableString.setSpan(new AbsoluteSizeSpan(convertSpToPixels(size, context)), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        if (foreColor != Integer.MAX_VALUE)
-            spannableString.setSpan(new ForegroundColorSpan(foreColor), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        if (bgColor != Integer.MAX_VALUE)
-            spannableString.setSpan(new BackgroundColorSpan(bgColor), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        return spannableString;
-    }
-
-    public static int span(int bgColor, SpannableString text, String section, int fromIndex) {
-        int index = text.toString().indexOf(section, fromIndex);
-        if (index == -1) return index;
-
-        text.setSpan(new BackgroundColorSpan(bgColor), index, index + section.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        return index + section.length();
-    }
-
-    public static int convertSpToPixels(float sp, Context context) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
-    }
-
-    public static String inputStreamToString(InputStream is) {
-        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : Tuils.EMPTYSTRING;
-    }
-
 //    static final int WEATHER_TIMEOUT = 6000;
 //    public static boolean location(Context context, final ArgsRunnable whenFound, final Runnable notFound, final Handler handler) {
 //        final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -672,22 +550,135 @@ public class Tuils {
 //        }
 //    }
 
-    public abstract static class ArgsRunnable implements Runnable {
-        private Object[] args;
+    public static double getTotalExternalMemorySize(int unit) {
+        try {
+            return getTotaleSpace(XMLPrefsManager.get(File.class, Behavior.external_storage_path), unit);
+        } catch (Exception e) {
+            return -1;
+        }
+    }
 
-        public void setArgs(Object... args) {
-            this.args = args;
+    public static double getAvailableSpace(File dir, int unit) {
+        if (dir == null) return -1;
+
+        StatFs statFs = new StatFs(dir.getAbsolutePath());
+        long blocks = statFs.getAvailableBlocks();
+        return formatSize(blocks * statFs.getBlockSize(), unit);
+    }
+
+    public static double getTotaleSpace(File dir, int unit) {
+        if (dir == null) return -1;
+
+        StatFs statFs = new StatFs(dir.getAbsolutePath());
+        long blocks = statFs.getBlockCount();
+        return formatSize(blocks * statFs.getBlockSize(), unit);
+    }
+
+    public static double percentage(double part, double total) {
+        return round(part * 100 / total, 2);
+    }
+
+    public static double formatSize(long bytes, int unit) {
+        double convert = 1048576.0;
+        double smallConvert = 1024.0;
+
+        double result;
+
+        switch (unit) {
+            case TERA:
+                result = (bytes / convert) / convert;
+                break;
+            case GIGA:
+                result = (bytes / convert) / smallConvert;
+                break;
+            case MEGA:
+                result = bytes / convert;
+                break;
+            case KILO:
+                result = bytes / smallConvert;
+                break;
+            case BYTE:
+                result = bytes;
+                break;
+            default:
+                return -1;
         }
 
-        public void run(Object... args) {
-            setArgs(args);
-            run();
+        return round(result, 2);
+    }
+
+    public static boolean isMyLauncherDefault(PackageManager packageManager) {
+        final IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
+        filter.addCategory(Intent.CATEGORY_HOME);
+
+        List<IntentFilter> filters = new ArrayList<>();
+        filters.add(filter);
+
+        final String myPackageName = BuildConfig.APPLICATION_ID;
+        List<ComponentName> activities = new ArrayList<>();
+
+        // You can use name of your package here as third argument
+        packageManager.getPreferredActivities(filters, activities, null);
+
+        for (ComponentName activity : activities) {
+            if (myPackageName.equals(activity.getPackageName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static SpannableString span(CharSequence text, int color) {
+        return span(null, text, color, Integer.MAX_VALUE);
+    }
+
+    public static SpannableString span(Context context, int size, CharSequence text) {
+        return span(context, text, Integer.MAX_VALUE, size);
+    }
+
+    public static SpannableString span(Context context, CharSequence text, int color, int size) {
+        return span(context, Integer.MAX_VALUE, color, text, size);
+    }
+
+    public static SpannableString span(int bgColor, int foreColor, CharSequence text) {
+        return span(null, bgColor, foreColor, text, Integer.MAX_VALUE);
+    }
+
+    public static SpannableString span(Context context, int bgColor, int foreColor, CharSequence text, int size) {
+        if (text == null) {
+            text = Tuils.EMPTYSTRING;
         }
 
-        public <T> T get(Class<T> c, int index) {
-            if (index < args.length) return (T) args[index];
-            return null;
-        }
+        SpannableString spannableString;
+        if (text instanceof SpannableString) spannableString = (SpannableString) text;
+        else spannableString = new SpannableString(text);
+
+        if (size != Integer.MAX_VALUE && context != null)
+            spannableString.setSpan(new AbsoluteSizeSpan(convertSpToPixels(size, context)), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (foreColor != Integer.MAX_VALUE)
+            spannableString.setSpan(new ForegroundColorSpan(foreColor), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (bgColor != Integer.MAX_VALUE)
+            spannableString.setSpan(new BackgroundColorSpan(bgColor), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return spannableString;
+    }
+
+    public static int span(int bgColor, SpannableString text, String section, int fromIndex) {
+        int index = text.toString().indexOf(section, fromIndex);
+        if (index == -1) return index;
+
+        text.setSpan(new BackgroundColorSpan(bgColor), index, index + section.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return index + section.length();
+    }
+
+    public static int convertSpToPixels(float sp, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
+    }
+
+    public static String inputStreamToString(InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : Tuils.EMPTYSTRING;
     }
 
     public static void deleteContentOnly(File dir) {
@@ -744,8 +735,6 @@ public class Tuils {
 
         Tuils.log("end of parents of: " + v);
     }
-
-    private static final View.OnClickListener deepClickListener = v -> Tuils.log(v.toString());
 
     public static void deepClickView(View v) {
         v.setOnClickListener(deepClickListener);
@@ -897,14 +886,6 @@ public class Tuils {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
-    public static final int TERA = 0;
-    public static final int GIGA = 1;
-    public static final int MEGA = 2;
-    public static final int KILO = 3;
-    public static final int BYTE = 4;
-
-    private static final long total = -1;
-
     public static double freeRam(ActivityManager mgr, MemoryInfo info) {
         mgr.getMemoryInfo(info);
         return info.availMem;
@@ -1012,10 +993,6 @@ public class Tuils {
         }
         return -1;
     }
-
-    static Pattern pd = Pattern.compile("%d", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
-    static Pattern pu = Pattern.compile("%u", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
-    static Pattern pp = Pattern.compile("%p", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
 
     public static String getHint(String currentPath) {
         if (!XMLPrefsManager.getBoolean(Ui.show_session_info)) return null;
@@ -1278,8 +1255,6 @@ public class Tuils {
         return output.toString();
     }
 
-    static Pattern unnecessarySpaces = Pattern.compile("\\s{2,}");
-
     public static String removeUnncesarySpaces(String string) {
         return unnecessarySpaces.matcher(string).replaceAll(Tuils.SPACE);
     }
@@ -1493,9 +1468,6 @@ public class Tuils {
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    private static final int FILEUPDATE_DELAY = 100;
-    private static File folder = null;
-
     public static File getFolder() {
         return folder;
     }
@@ -1542,8 +1514,6 @@ public class Tuils {
         }
         return 0;
     }
-
-    private static final String SPACE_REGEXP = "\\s";
 
     public static String removeSpaces(String string) {
         return string.replaceAll(SPACE_REGEXP, EMPTYSTRING);
@@ -1600,7 +1570,7 @@ public class Tuils {
         try {
             FileInputStream in = new FileInputStream(file);
 
-            while(in.read() != -1) count++;
+            while (in.read() != -1) count++;
 
             return count;
         } catch (IOException e) {
@@ -1613,13 +1583,31 @@ public class Tuils {
         Tuils.sendOutput(
                 Color.RED,
                 context, context.getString(R.string.output_xmlproblem1) + Tuils.SPACE + PATH + context.getString(R.string.output_xmlproblem2) + Tuils.NEWLINE + context.getString(R.string.output_errorlabel) +
-                "File: " + e.getSystemId() + Tuils.NEWLINE +
-                "Message" + e.getMessage() + Tuils.NEWLINE +
-                "Line" + e.getLineNumber() + Tuils.NEWLINE +
-                "Column" + e.getColumnNumber());
+                        "File: " + e.getSystemId() + Tuils.NEWLINE +
+                        "Message" + e.getMessage() + Tuils.NEWLINE +
+                        "Line" + e.getLineNumber() + Tuils.NEWLINE +
+                        "Column" + e.getColumnNumber());
     }
 
     public static void sendXMLParseError(Context context, String PATH) {
         Tuils.sendOutput(Color.RED, context, context.getString(R.string.output_xmlproblem1) + Tuils.SPACE + PATH + context.getString(R.string.output_xmlproblem2));
+    }
+
+    public abstract static class ArgsRunnable implements Runnable {
+        private Object[] args;
+
+        public void setArgs(Object... args) {
+            this.args = args;
+        }
+
+        public void run(Object... args) {
+            setArgs(args);
+            run();
+        }
+
+        public <T> T get(Class<T> c, int index) {
+            if (index < args.length) return (T) args[index];
+            return null;
+        }
     }
 }

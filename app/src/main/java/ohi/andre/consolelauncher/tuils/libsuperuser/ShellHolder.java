@@ -17,12 +17,11 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 public class ShellHolder {
 
     private final Context context;
+    Pattern p = Pattern.compile("^\\n");
 
     public ShellHolder(Context context) {
         this.context = context;
     }
-
-    Pattern p = Pattern.compile("^\\n");
 
     public Shell.Interactive build() {
         Shell.Interactive interactive = new Shell.Builder()

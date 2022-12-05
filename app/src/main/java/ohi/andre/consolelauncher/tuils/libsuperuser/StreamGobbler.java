@@ -26,27 +26,10 @@ import java.util.List;
  * Thread utility class continuously reading from an InputStream
  */
 public class StreamGobbler extends Thread {
-    /**
-     * Line callback interface
-     */
-    public interface OnLineListener {
-        /**
-         * <p>Line callback</p>
-         *
-         * <p>This callback should process the line as quickly as possible.
-         * Delays in this callback may pause the native process or even
-         * result in a deadlock</p>
-         *
-         * @param line String that was gobbled
-         */
-        void onLine(String line);
-    }
-
     private String shell = null;
     private BufferedReader reader = null;
     private List<String> writer = null;
     private OnLineListener listener = null;
-
     /**
      * <p>StreamGobbler constructor</p>
      *
@@ -100,5 +83,21 @@ public class StreamGobbler extends Thread {
         } catch (IOException e) {
             // read already closed
         }
+    }
+
+    /**
+     * Line callback interface
+     */
+    public interface OnLineListener {
+        /**
+         * <p>Line callback</p>
+         *
+         * <p>This callback should process the line as quickly as possible.
+         * Delays in this callback may pause the native process or even
+         * result in a deadlock</p>
+         *
+         * @param line String that was gobbled
+         */
+        void onLine(String line);
     }
 }

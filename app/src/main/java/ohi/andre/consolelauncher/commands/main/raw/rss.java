@@ -23,6 +23,31 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 
 public class rss extends ParamCommand {
 
+    @Override
+    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        return null;
+    }
+
+    @Override
+    public int priority() {
+        return 3;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_rss;
+    }
+
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
 
         add {
@@ -37,7 +62,7 @@ public class rss extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.LONG, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.LONG, CommandAbstraction.PLAIN_TEXT};
             }
         },
         rm {
@@ -50,7 +75,7 @@ public class rss extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
 
 
@@ -75,7 +100,7 @@ public class rss extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
         },
         show {
@@ -89,7 +114,7 @@ public class rss extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.BOOLEAN};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.BOOLEAN};
             }
         },
         update_time {
@@ -103,7 +128,7 @@ public class rss extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.LONG};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.LONG};
             }
         },
         time_format {
@@ -114,13 +139,13 @@ public class rss extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
             }
         },
         format {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -134,7 +159,7 @@ public class rss extends ParamCommand {
         color {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.COLOR};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.COLOR};
             }
 
             @Override
@@ -147,14 +172,14 @@ public class rss extends ParamCommand {
 
             @Override
             public String onArgNotFound(ExecutePack pack, int index) {
-                if(index == 2) return pack.context.getString(R.string.output_invalidcolor);
+                if (index == 2) return pack.context.getString(R.string.output_invalidcolor);
                 return super.onArgNotFound(pack, index);
             }
         },
         entry_tag {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -165,7 +190,7 @@ public class rss extends ParamCommand {
         date_tag {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -176,18 +201,18 @@ public class rss extends ParamCommand {
         last_check {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
 
             @Override
             public String exec(ExecutePack pack) {
-                Node n = XMLPrefsManager.findNode(new File(Tuils.getFolder(), RssManager.PATH), RssManager.RSS_LABEL, new String[] {RssManager.ID_ATTRIBUTE}, new String[] {String.valueOf(pack.getInt())});
-                if(n == null) return pack.context.getString(R.string.id_notfound);
+                Node n = XMLPrefsManager.findNode(new File(Tuils.getFolder(), RssManager.PATH), RssManager.RSS_LABEL, new String[]{RssManager.ID_ATTRIBUTE}, new String[]{String.valueOf(pack.getInt())});
+                if (n == null) return pack.context.getString(R.string.id_notfound);
 
                 Element el = (Element) n;
 
                 String value = el.hasAttribute(RssManager.LASTCHECKED_ATTRIBUTE) ? el.getAttribute(RssManager.LASTCHECKED_ATTRIBUTE) : null;
-                if(value == null) return pack.context.getString(R.string.rss_never_checked);
+                if (value == null) return pack.context.getString(R.string.rss_never_checked);
 
                 try {
                     return TimeManager.instance.replace(XMLPrefsManager.get(Rss.rss_time_format), Long.parseLong(value),
@@ -201,25 +226,26 @@ public class rss extends ParamCommand {
         frc {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
 
             @Override
             public String exec(ExecutePack pack) {
-                if(!((MainPack) pack).rssManager.updateRss(pack.getInt(), false, true)) return pack.context.getString(R.string.id_notfound);
+                if (!((MainPack) pack).rssManager.updateRss(pack.getInt(), false, true))
+                    return pack.context.getString(R.string.id_notfound);
                 return null;
             }
         },
         info {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
 
             @Override
             public String exec(ExecutePack pack) {
                 RssManager.Rss rss = ((MainPack) pack).rssManager.findId(pack.getInt());
-                if(rss == null) return pack.context.getString(R.string.id_notfound);
+                if (rss == null) return pack.context.getString(R.string.id_notfound);
 
                 return rss.toString();
             }
@@ -227,7 +253,7 @@ public class rss extends ParamCommand {
         include_if_matches {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -241,7 +267,7 @@ public class rss extends ParamCommand {
         exclude_if_matches {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -255,7 +281,7 @@ public class rss extends ParamCommand {
         add_command {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.NO_SPACE_STRING, CommandAbstraction.NO_SPACE_STRING, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.NO_SPACE_STRING, CommandAbstraction.NO_SPACE_STRING, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -278,7 +304,7 @@ public class rss extends ParamCommand {
         rm_command {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
 
             @Override
@@ -289,7 +315,7 @@ public class rss extends ParamCommand {
         wifi_only {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.BOOLEAN};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.BOOLEAN};
             }
 
             @Override
@@ -308,7 +334,7 @@ public class rss extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
             }
         },
         rm_format {
@@ -319,7 +345,7 @@ public class rss extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
         },
         file {
@@ -334,11 +360,6 @@ public class rss extends ParamCommand {
                 return new int[0];
             }
         };
-
-        @Override
-        public String label() {
-            return Tuils.MINUS + name();
-        }
 
         static Param get(String p) {
             p = p.toLowerCase();
@@ -361,6 +382,11 @@ public class rss extends ParamCommand {
         }
 
         @Override
+        public String label() {
+            return Tuils.MINUS + name();
+        }
+
+        @Override
         public String onNotArgEnough(ExecutePack pack, int n) {
             return pack.context.getString(R.string.help_rss);
         }
@@ -369,30 +395,5 @@ public class rss extends ParamCommand {
         public String onArgNotFound(ExecutePack pack, int index) {
             return pack.context.getString(R.string.invalid_integer);
         }
-    }
-
-    @Override
-    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        return null;
-    }
-
-    @Override
-    public int priority() {
-        return 3;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_rss;
-    }
-
-    @Override
-    public String[] params() {
-        return Param.labels();
     }
 }

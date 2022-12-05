@@ -1,6 +1,7 @@
 package ohi.andre.consolelauncher.commands.main.raw;
 
 import android.content.Intent;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
@@ -20,12 +21,37 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 
 public class htmlextract extends ParamCommand {
 
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
+    @Override
+    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        return null;
+    }
+
+    @Override
+    public int priority() {
+        return 3;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_htmlextract;
+    }
+
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
 
         query {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -43,9 +69,9 @@ public class htmlextract extends ParamCommand {
 
             @Override
             public String onArgNotFound(ExecutePack pack, int index) {
-                if(index == 1) return pack.context.getString(R.string.invalid_integer);
+                if (index == 1) return pack.context.getString(R.string.invalid_integer);
 
-                if(index == 2) {
+                if (index == 2) {
 //                    the user was trying to use the default format
 
 //                    waste the first
@@ -66,7 +92,7 @@ public class htmlextract extends ParamCommand {
         add {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.DATASTORE_PATH_TYPE, CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.DATASTORE_PATH_TYPE, CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -83,14 +109,14 @@ public class htmlextract extends ParamCommand {
 
             @Override
             public String onArgNotFound(ExecutePack pack, int index) {
-                if(index == 1) return pack.context.getString(R.string.invalid_datastoretype);
+                if (index == 1) return pack.context.getString(R.string.invalid_datastoretype);
                 return super.onArgNotFound(pack, index);
             }
         },
         rm {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
 
             @Override
@@ -106,7 +132,7 @@ public class htmlextract extends ParamCommand {
         edit {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -123,7 +149,7 @@ public class htmlextract extends ParamCommand {
         ls {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.DATASTORE_PATH_TYPE};
+                return new int[]{CommandAbstraction.DATASTORE_PATH_TYPE};
             }
 
             @Override
@@ -208,30 +234,5 @@ public class htmlextract extends ParamCommand {
         public String onArgNotFound(ExecutePack pack, int index) {
             return pack.context.getString(R.string.invalid_integer);
         }
-    }
-
-    @Override
-    public String[] params() {
-        return Param.labels();
-    }
-
-    @Override
-    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        return null;
-    }
-
-    @Override
-    public int priority() {
-        return 3;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_htmlextract;
     }
 }

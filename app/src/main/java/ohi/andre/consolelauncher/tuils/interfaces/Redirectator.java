@@ -9,5 +9,6 @@ import ohi.andre.consolelauncher.commands.main.specific.RedirectCommand;
 public interface Redirectator {
 
     void prepareRedirection(RedirectCommand cmd);
+
     void cleanup();
 }

@@ -46,13 +46,10 @@ public class PrivateIOReceiver extends BroadcastReceiver {
     public static final String ID = BuildConfig.APPLICATION_ID + ".id";
     public static final String CURRENT_ID = BuildConfig.APPLICATION_ID + ".current_id";
     public static final String INFO_AREA = BuildConfig.APPLICATION_ID + ".info_area";
-
+    public static int currentId = 0;
     Outputable outputable;
     Inputable inputable;
-
     Activity activity;
-
-    public static int currentId = 0;
 
     public PrivateIOReceiver(Activity activity, Outputable outputable, Inputable inputable) {
         this.outputable = outputable;
@@ -64,16 +61,16 @@ public class PrivateIOReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 //        to avoid double onReceive calls
         int cId = intent.getIntExtra(CURRENT_ID, -1);
-        if(cId != -1 && cId != currentId) return;
+        if (cId != -1 && cId != currentId) return;
         currentId++;
 
         Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
-        if(remoteInput == null || remoteInput.size() == 0) {
+        if (remoteInput == null || remoteInput.size() == 0) {
             CharSequence text = intent.getCharSequenceExtra(TEXT);
-            if(text == null) text = intent.getStringExtra(TEXT);
-            if(text == null) return;
+            if (text == null) text = intent.getStringExtra(TEXT);
+            if (text == null) return;
 
-            if(intent.getAction().equals(ACTION_OUTPUT)) {
+            if (intent.getAction().equals(ACTION_OUTPUT)) {
                 boolean infoArea = intent.getBooleanExtra(INFO_AREA, false);
                 int color = intent.getIntExtra(COLOR, Integer.MAX_VALUE);
 
@@ -82,53 +79,54 @@ public class PrivateIOReceiver extends BroadcastReceiver {
                 singleClickExtraObject = intent.getStringExtra(ACTION);
                 longClickExtraObject = intent.getStringExtra(LONG_ACTION);
 
-                if(singleClickExtraObject == null) singleClickExtraObject = intent.getParcelableExtra(ACTION);
-                if(longClickExtraObject == null) longClickExtraObject = intent.getParcelableExtra(LONG_ACTION);
+                if (singleClickExtraObject == null)
+                    singleClickExtraObject = intent.getParcelableExtra(ACTION);
+                if (longClickExtraObject == null)
+                    longClickExtraObject = intent.getParcelableExtra(LONG_ACTION);
 
-                if(singleClickExtraObject != null || longClickExtraObject != null) {
+                if (singleClickExtraObject != null || longClickExtraObject != null) {
                     text = new SpannableStringBuilder(text);
                     ((SpannableStringBuilder) text).setSpan(new LongClickableSpan(singleClickExtraObject, longClickExtraObject), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
 
-                if(color != Integer.MAX_VALUE) outputable.onOutput(color, text);
+                if (color != Integer.MAX_VALUE) outputable.onOutput(color, text);
                 else {
                     int type = intent.getIntExtra(TYPE, -1);
-                    if(type != -1) outputable.onOutput(text, type);
+                    if (type != -1) outputable.onOutput(text, type);
                     else outputable.onOutput(text, TerminalManager.CATEGORY_OUTPUT);
                 }
-            }
-            else if(intent.getAction().equals(ACTION_INPUT)) {
+            } else if (intent.getAction().equals(ACTION_INPUT)) {
                 inputable.in(text.toString());
-            } else if(intent.getAction().equals(ACTION_REPLY) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            } else if (intent.getAction().equals(ACTION_REPLY) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
                 Bundle b = intent.getBundleExtra(BUNDLE);
                 Parcelable[] ps = intent.getParcelableArrayExtra(REMOTE_INPUTS);
                 PendingIntent pi = intent.getParcelableExtra(PENDING_INTENT);
                 int id = intent.getIntExtra(ID, 0);
 
-                if(b == null) {
+                if (b == null) {
                     Tuils.sendOutput(Color.RED, context, "The bundle is null");
                     return;
                 }
 
-                if(ps == null || ps.length == 0) {
+                if (ps == null || ps.length == 0) {
                     Tuils.sendOutput(Color.RED, context, "No remote inputs");
                     return;
                 }
 
-                if(pi == null) {
+                if (pi == null) {
                     Tuils.sendOutput(Color.RED, context, "The pending intent couldn't be found");
                     return;
                 }
 
                 android.app.RemoteInput[] rms = new android.app.RemoteInput[ps.length];
-                for(int j = 0; j < rms.length; j++) {
+                for (int j = 0; j < rms.length; j++) {
                     rms[j] = (android.app.RemoteInput) ps[j];
                 }
 
                 Intent localIntent = new Intent();
                 localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                for(android.app.RemoteInput remoteIn : rms) {
+                for (android.app.RemoteInput remoteIn : rms) {
                     b.putCharSequence(remoteIn.getResultKey(), text);
                 }
 

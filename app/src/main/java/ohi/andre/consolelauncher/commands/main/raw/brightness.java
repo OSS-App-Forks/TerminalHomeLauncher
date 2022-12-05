@@ -34,8 +34,8 @@ public class brightness implements CommandAbstraction {
         ((Activity) pack.context).runOnUiThread(() -> {
             int b = brightness;
 
-            if(b < 0) b = 0;
-            else if(b > 100) b = 100;
+            if (b < 0) b = 0;
+            else if (b > 100) b = 100;
 
             b = b * 255 / 100;
 
@@ -46,7 +46,8 @@ public class brightness implements CommandAbstraction {
                 autobrightnessState = SCREEN_BRIGHTNESS_MODE_MANUAL;
             }
 
-            if(autobrightnessState == SCREEN_BRIGHTNESS_MODE_AUTOMATIC) Settings.System.putInt(pack.context.getContentResolver(), SCREEN_BRIGHTNESS_MODE, SCREEN_BRIGHTNESS_MODE_MANUAL);
+            if (autobrightnessState == SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+                Settings.System.putInt(pack.context.getContentResolver(), SCREEN_BRIGHTNESS_MODE, SCREEN_BRIGHTNESS_MODE_MANUAL);
 
             ContentResolver cResolver = pack.context.getApplicationContext().getContentResolver();
             Settings.System.putInt(cResolver, SCREEN_BRIGHTNESS, b);
@@ -71,7 +72,7 @@ public class brightness implements CommandAbstraction {
 
     @Override
     public int[] argType() {
-        return new int[] {CommandAbstraction.INT};
+        return new int[]{CommandAbstraction.INT};
     }
 
     @Override

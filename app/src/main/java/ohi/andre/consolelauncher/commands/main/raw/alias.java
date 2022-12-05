@@ -16,13 +16,38 @@ import ohi.andre.consolelauncher.tuils.Tuils;
  */
 public class alias extends ParamCommand {
 
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
+    @Override
+    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        return null;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_alias;
+    }
+
+    @Override
+    public int priority() {
+        return 2;
+    }
+
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
 
         add {
             @Override
             public String exec(ExecutePack pack) {
                 ArrayList<String> args = pack.getList();
-                if(args.size() < 2) return pack.context.getString(R.string.output_lessarg);
+                if (args.size() < 2) return pack.context.getString(R.string.output_lessarg);
 
                 ((MainPack) pack).aliasManager.add(pack.context, args.remove(0), Tuils.toPlanString(args, Tuils.SPACE));
                 return null;
@@ -30,21 +55,21 @@ public class alias extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.TEXTLIST};
+                return new int[]{CommandAbstraction.TEXTLIST};
             }
         },
         rm {
             @Override
             public String exec(ExecutePack pack) {
                 ArrayList<String> args = pack.getList();
-                if(args.size() < 1) return pack.context.getString(R.string.output_lessarg);
+                if (args.size() < 1) return pack.context.getString(R.string.output_lessarg);
                 ((MainPack) pack).aliasManager.remove(pack.context, args.get(0));
                 return null;
             }
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.TEXTLIST};
+                return new int[]{CommandAbstraction.TEXTLIST};
             }
         },
         file {
@@ -117,31 +142,5 @@ public class alias extends ParamCommand {
         public String onArgNotFound(ExecutePack pack, int index) {
             return null;
         }
-    }
-
-
-    @Override
-    public String[] params() {
-        return Param.labels();
-    }
-
-    @Override
-    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        return null;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_alias;
-    }
-
-    @Override
-    public int priority() {
-        return 2;
     }
 }

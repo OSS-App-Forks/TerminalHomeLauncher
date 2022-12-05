@@ -19,20 +19,20 @@ public class CommandsPreferences {
     public CommandsPreferences() {
         preferenceHashMap = new HashMap<>();
 
-        for(XMLPrefsSave save : Cmd.values()) {
+        for (XMLPrefsSave save : Cmd.values()) {
             preferenceHashMap.put(save.label(), XMLPrefsManager.get(save));
         }
     }
 
     public String get(String s) {
         String v = preferenceHashMap.get(s);
-        if(v == null) return XMLPrefsManager.get(XMLPrefsManager.XMLPrefsRoot.CMD, s);
+        if (v == null) return XMLPrefsManager.get(XMLPrefsManager.XMLPrefsRoot.CMD, s);
         return v;
     }
 
     public String get(XMLPrefsSave save) {
         String v = get(save.label());
-        if(v == null || v.length() == 0) v = save.defaultValue();
+        if (v == null || v.length() == 0) v = save.defaultValue();
         return v;
     }
 
@@ -47,7 +47,7 @@ public class CommandsPreferences {
 
     public int getPriority(CommandAbstraction c) {
         int priority = userSetPriority(c);
-        if(priority == Integer.MAX_VALUE) return c.priority();
+        if (priority == Integer.MAX_VALUE) return c.priority();
         return priority;
     }
 }

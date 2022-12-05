@@ -44,16 +44,11 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 
 public class TuixtActivity extends Activity {
 
-    private final String FIRSTACCESS_KEY = "firstAccess";
-
     public static final int BACK_PRESSED = 2;
-
-    private long lastEnter;
-
     public static String PATH = "path";
-
     public static String ERROR_KEY = "error";
-
+    private final String FIRSTACCESS_KEY = "firstAccess";
+    private long lastEnter;
     private EditText inputView;
     private EditText fileView;
     private TextView outputView;
@@ -69,7 +64,7 @@ public class TuixtActivity extends Activity {
         final Intent intent = getIntent();
 
         String path = intent.getStringExtra(PATH);
-        if(path == null) {
+        if (path == null) {
             Uri uri = intent.getData();
             File file = new File(uri.getPath());
             path = file.getAbsolutePath();
@@ -85,7 +80,7 @@ public class TuixtActivity extends Activity {
             finish();
         }
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !XMLPrefsManager.getBoolean(Ui.ignore_bar_color)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !XMLPrefsManager.getBoolean(Ui.ignore_bar_color)) {
             Window window = getWindow();
 
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -141,7 +136,7 @@ public class TuixtActivity extends Activity {
         fileView.setTextSize(ioSize);
         fileView.setTextColor(outputColor);
         fileView.setOnTouchListener((v, event) -> {
-            if(event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 outputView.setVisibility(View.GONE);
                 outputView.setText(Tuils.EMPTYSTRING);
             }
@@ -163,13 +158,13 @@ public class TuixtActivity extends Activity {
         inputView.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         inputView.setOnEditorActionListener((v, actionId, event) -> {
 //                physical enter
-            if(actionId == KeyEvent.ACTION_DOWN) {
-                if(lastEnter == 0) {
+            if (actionId == KeyEvent.ACTION_DOWN) {
+                if (lastEnter == 0) {
                     lastEnter = System.currentTimeMillis();
                 } else {
                     long difference = System.currentTimeMillis() - lastEnter;
                     lastEnter = System.currentTimeMillis();
-                    if(difference < 350) {
+                    if (difference < 350) {
                         return true;
                     }
                 }
@@ -201,8 +196,8 @@ public class TuixtActivity extends Activity {
 
                     final StringBuilder builder = new StringBuilder();
                     String line, lastLine = null;
-                    while( (line = reader.readLine()) != null) {
-                        if(lastLine != null) {
+                    while ((line = reader.readLine()) != null) {
+                        if (lastLine != null) {
                             builder.append(Tuils.NEWLINE);
                         }
                         builder.append(line);
@@ -263,20 +258,20 @@ public class TuixtActivity extends Activity {
             inputView.setText(Tuils.EMPTYSTRING);
 
             input = input.trim();
-            if(input.length() == 0) {
+            if (input.length() == 0) {
                 return;
             }
 
             outputView.setVisibility(View.VISIBLE);
 
             Command command = CommandTuils.parse(input, pack);
-            if(command == null) {
+            if (command == null) {
                 outputView.setText(R.string.output_commandnotfound);
                 return;
             }
 
             String output = command.exec(pack);
-            if(output != null) {
+            if (output != null) {
                 outputView.setText(output);
             }
         } catch (Exception e) {

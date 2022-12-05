@@ -19,6 +19,31 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 
 public class devutils extends ParamCommand {
 
+    @Override
+    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    public int priority() {
+        return 2;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_devutils;
+    }
+
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        return null;
+    }
+
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
         notify {
             @Override
@@ -26,25 +51,25 @@ public class devutils extends ParamCommand {
                 List<String> text = pack.getList();
 
                 String title, txt = null;
-                if(text.size() == 0) return null;
+                if (text.size() == 0) return null;
                 else {
                     title = text.remove(0);
-                    if(text.size() >= 2) txt = Tuils.toPlanString(text, Tuils.SPACE);
+                    if (text.size() >= 2) txt = Tuils.toPlanString(text, Tuils.SPACE);
                 }
 
                 NotificationManagerCompat.from(pack.context).notify(200,
                         new NotificationCompat.Builder(pack.context)
-                            .setSmallIcon(R.mipmap.ic_launcher)
-                            .setContentTitle(title)
-                            .setContentText(txt)
-                            .build());
+                                .setSmallIcon(R.mipmap.ic_launcher)
+                                .setContentTitle(title)
+                                .setContentText(txt)
+                                .build());
 
                 return null;
             }
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.TEXTLIST};
+                return new int[]{CommandAbstraction.TEXTLIST};
             }
         },
         check_notifications {
@@ -93,30 +118,5 @@ public class devutils extends ParamCommand {
         public String onArgNotFound(ExecutePack pack, int index) {
             return null;
         }
-    }
-
-    @Override
-    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    public int priority() {
-        return 2;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_devutils;
-    }
-
-    @Override
-    public String[] params() {
-        return Param.labels();
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        return null;
     }
 }

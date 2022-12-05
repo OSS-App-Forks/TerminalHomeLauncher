@@ -20,6 +20,11 @@ import ohi.andre.consolelauncher.tuils.Tuils;
  */
 public class shellcommands implements CommandAbstraction {
 
+    private final String[] path = {
+            "/system/bin",
+            "/system/xbin"
+    };
+
     @Override
     public String exec(ExecutePack pack) {
         Collection<String> cmds = getOSCommands();
@@ -34,17 +39,12 @@ public class shellcommands implements CommandAbstraction {
         return Tuils.toPlanString(commands, Tuils.EMPTYSTRING);
     }
 
-    private final String[] path = {
-            "/system/bin",
-            "/system/xbin"
-    };
-
     private Set<String> getOSCommands() {
         Set<String> commands = new HashSet<>();
 
         for (String s : path) {
             String[] f = new File(s).list();
-            if(f != null) {
+            if (f != null) {
                 commands.addAll(Arrays.asList(f));
             }
         }

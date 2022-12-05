@@ -26,6 +26,35 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 
 public class cntcts extends ParamCommand {
 
+    @Override
+    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        if (ContextCompat.checkSelfPermission(pack.context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) pack.context, new String[]{Manifest.permission.READ_CONTACTS}, LauncherActivity.COMMAND_REQUEST_PERMISSION);
+            return pack.context.getString(R.string.output_waitingpermission);
+        }
+        return null;
+    }
+
+    @Override
+    public int priority() {
+        return 3;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_cntcts;
+    }
+
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
 
         ls {
@@ -70,7 +99,7 @@ public class cntcts extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONTACTNUMBER};
+                return new int[]{CommandAbstraction.CONTACTNUMBER};
             }
 
             @Override
@@ -90,7 +119,7 @@ public class cntcts extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONTACTNUMBER};
+                return new int[]{CommandAbstraction.CONTACTNUMBER};
             }
 
             @Override
@@ -114,7 +143,7 @@ public class cntcts extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.CONTACTNUMBER};
+                return new int[]{CommandAbstraction.CONTACTNUMBER};
             }
 
             @Override
@@ -157,34 +186,5 @@ public class cntcts extends ParamCommand {
         public String onNotArgEnough(ExecutePack pack, int n) {
             return pack.context.getString(R.string.help_cntcts);
         }
-    }
-
-    @Override
-    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    public String[] params() {
-        return Param.labels();
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        if (ContextCompat.checkSelfPermission(pack.context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) pack.context, new String[]{Manifest.permission.READ_CONTACTS}, LauncherActivity.COMMAND_REQUEST_PERMISSION);
-            return pack.context.getString(R.string.output_waitingpermission);
-        }
-        return null;
-    }
-
-    @Override
-    public int priority() {
-        return 3;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_cntcts;
     }
 }

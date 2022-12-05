@@ -9,5 +9,6 @@ import ohi.andre.consolelauncher.commands.main.specific.RedirectCommand;
 public interface OnRedirectionListener {
 
     void onRedirectionRequest(RedirectCommand cmd);
+
     void onRedirectionEnd(RedirectCommand cmd);
 }

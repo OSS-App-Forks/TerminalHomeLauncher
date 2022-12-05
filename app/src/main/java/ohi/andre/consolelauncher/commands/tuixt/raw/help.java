@@ -29,7 +29,7 @@ public class help implements CommandAbstraction {
 
     @Override
     public int[] argType() {
-        return new int[] {CommandAbstraction.COMMAND};
+        return new int[]{CommandAbstraction.COMMAND};
     }
 
     @Override

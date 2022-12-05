@@ -16,6 +16,7 @@ public interface Reloadable {
     String MESSAGE = "msg";
 
     void reload();
+
     void addMessage(String header, String message);
 
     class ReloadMessageCategory {
@@ -34,7 +35,8 @@ public interface Reloadable {
 
             StringBuilder builder = new StringBuilder();
             final String dash = "-";
-            for(int c = 0; c < lines.size(); c++) builder.append(Tuils.SPACE).append(dash).append(Tuils.SPACE).append(lines.get(c)).append(Tuils.NEWLINE);
+            for (int c = 0; c < lines.size(); c++)
+                builder.append(Tuils.SPACE).append(dash).append(Tuils.SPACE).append(lines.get(c)).append(Tuils.NEWLINE);
 
             return TextUtils.concat(sequence, builder.toString());
         }

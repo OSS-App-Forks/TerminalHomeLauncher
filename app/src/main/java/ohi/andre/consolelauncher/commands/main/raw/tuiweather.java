@@ -1,6 +1,7 @@
 package ohi.andre.consolelauncher.commands.main.raw;
 
 import android.content.Intent;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import ohi.andre.consolelauncher.R;
@@ -22,14 +23,39 @@ import ohi.andre.consolelauncher.tuils.interfaces.Reloadable;
 
 public class tuiweather extends ParamCommand {
 
+    @Override
+    protected Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    public int priority() {
+        return 2;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_weather;
+    }
+
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        return null;
+    }
+
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
 
         update {
             @Override
             public String exec(ExecutePack pack) {
-                if(!XMLPrefsManager.getBoolean(Ui.show_weather)) {
+                if (!XMLPrefsManager.getBoolean(Ui.show_weather)) {
                     return pack.context.getString(R.string.weather_disabled);
-                } else if(!XMLPrefsManager.wasChanged(Behavior.weather_key, false)) {
+                } else if (!XMLPrefsManager.wasChanged(Behavior.weather_key, false)) {
                     return pack.context.getString(R.string.weather_cant_update);
                 } else {
                     LocalBroadcastManager.getInstance(pack.context.getApplicationContext()).sendBroadcast(new Intent(UIManager.ACTION_WEATHER_MANUAL_UPDATE));
@@ -72,7 +98,7 @@ public class tuiweather extends ParamCommand {
         set_key {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -121,30 +147,5 @@ public class tuiweather extends ParamCommand {
         public String onArgNotFound(ExecutePack pack, int index) {
             return pack.context.getString(R.string.output_appnotfound);
         }
-    }
-
-    @Override
-    protected Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    public int priority() {
-        return 2;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_weather;
-    }
-
-    @Override
-    public String[] params() {
-        return Param.labels();
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        return null;
     }
 }

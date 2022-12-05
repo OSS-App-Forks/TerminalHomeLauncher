@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
@@ -28,6 +29,31 @@ import ohi.andre.consolelauncher.tuils.stuff.PolicyReceiver;
  */
 
 public class tui extends ParamCommand {
+
+    @Override
+    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        return null;
+    }
+
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
+    @Override
+    public int priority() {
+        return 4;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_tui;
+    }
 
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
 
@@ -59,7 +85,7 @@ public class tui extends ParamCommand {
         log {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.PLAIN_TEXT};
+                return new int[]{CommandAbstraction.PLAIN_TEXT};
             }
 
             @Override
@@ -79,13 +105,13 @@ public class tui extends ParamCommand {
         priority {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.COMMAND, CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.COMMAND, CommandAbstraction.INT};
             }
 
             @Override
             public String exec(ExecutePack pack) {
                 File file = new File(Tuils.getFolder(), "cmd.xml");
-                return XMLPrefsManager.set(file, pack.get().getClass().getSimpleName() + CommandsPreferences.PRIORITY_SUFFIX, new String[] {XMLPrefsManager.VALUE_ATTRIBUTE}, new String[] {String.valueOf(pack.getInt())});
+                return XMLPrefsManager.set(file, pack.get().getClass().getSimpleName() + CommandsPreferences.PRIORITY_SUFFIX, new String[]{XMLPrefsManager.VALUE_ATTRIBUTE}, new String[]{String.valueOf(pack.getInt())});
             }
 
             @Override
@@ -172,11 +198,6 @@ public class tui extends ParamCommand {
 //        }
         ;
 
-        @Override
-        public int[] args() {
-            return new int[0];
-        }
-
         static Param get(String p) {
             p = p.toLowerCase();
             Param[] ps = values();
@@ -190,11 +211,16 @@ public class tui extends ParamCommand {
             Param[] ps = values();
             String[] ss = new String[ps.length];
 
-            for(int count = 0; count < ps.length; count++) {
+            for (int count = 0; count < ps.length; count++) {
                 ss[count] = ps[count].label();
             }
 
             return ss;
+        }
+
+        @Override
+        public int[] args() {
+            return new int[0];
         }
 
         @Override
@@ -211,30 +237,5 @@ public class tui extends ParamCommand {
         public String onNotArgEnough(ExecutePack pack, int n) {
             return null;
         }
-    }
-
-    @Override
-    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        return null;
-    }
-
-    @Override
-    public String[] params() {
-        return Param.labels();
-    }
-
-    @Override
-    public int priority() {
-        return 4;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_tui;
     }
 }

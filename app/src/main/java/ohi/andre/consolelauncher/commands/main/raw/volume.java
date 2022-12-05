@@ -20,12 +20,37 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 
 public class volume extends ParamCommand {
 
+    @Override
+    public String[] params() {
+        return Param.labels();
+    }
+
+    @Override
+    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
+        return Param.get(param);
+    }
+
+    @Override
+    public int priority() {
+        return 3;
+    }
+
+    @Override
+    public int helpRes() {
+        return R.string.help_volume;
+    }
+
+    @Override
+    protected String doThings(ExecutePack pack) {
+        return null;
+    }
+
     private enum Param implements ohi.andre.consolelauncher.commands.main.Param {
 
         set {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT, CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT, CommandAbstraction.INT};
             }
 
             @Override
@@ -42,8 +67,8 @@ public class volume extends ParamCommand {
                 int type = pack.getInt();
                 int volume = pack.getInt();
 
-                if(volume < 0) volume = 0;
-                else if(volume > 100) volume = 100;
+                if (volume < 0) volume = 0;
+                else if (volume > 100) volume = 100;
 
                 AudioManager manager = (AudioManager) pack.context.getSystemService(Context.AUDIO_SERVICE);
                 int maxIndex = manager.getStreamMaxVolume(type);
@@ -63,7 +88,7 @@ public class volume extends ParamCommand {
         profile {
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
 
             @Override
@@ -98,7 +123,7 @@ public class volume extends ParamCommand {
 
             @Override
             public int[] args() {
-                return new int[] {CommandAbstraction.INT};
+                return new int[]{CommandAbstraction.INT};
             }
 
             @Override
@@ -123,7 +148,7 @@ public class volume extends ParamCommand {
                 AudioManager manager = (AudioManager) pack.context.getSystemService(Context.AUDIO_SERVICE);
 
                 StringBuilder builder = new StringBuilder();
-                for(int c = 0; c < labels.length; c++) {
+                for (int c = 0; c < labels.length; c++) {
                     appendInfo(builder, manager, c);
                 }
 
@@ -158,30 +183,5 @@ public class volume extends ParamCommand {
         public String onNotArgEnough(ExecutePack pack, int n) {
             return pack.context.getString(R.string.help_volume);
         }
-    }
-
-    @Override
-    public String[] params() {
-        return Param.labels();
-    }
-
-    @Override
-    protected ohi.andre.consolelauncher.commands.main.Param paramForString(MainPack pack, String param) {
-        return Param.get(param);
-    }
-
-    @Override
-    public int priority() {
-        return 3;
-    }
-
-    @Override
-    public int helpRes() {
-        return R.string.help_volume;
-    }
-
-    @Override
-    protected String doThings(ExecutePack pack) {
-        return null;
     }
 }
