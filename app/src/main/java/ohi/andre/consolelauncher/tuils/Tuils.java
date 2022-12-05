@@ -1375,7 +1375,7 @@ public class Tuils {
     }
 
     private static File getTuiFolder(Context context) {
-        File internalDir = context.getFilesDir();
+        File internalDir = Environment.getExternalStorageDirectory();
         return new File(internalDir, TUI_FOLDER);
     }
 
