@@ -1,17 +1,23 @@
 package ohi.andre.consolelauncher;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -21,6 +27,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -33,6 +43,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import ohi.andre.consolelauncher.commands.main.MainPack;
+import ohi.andre.consolelauncher.commands.main.raw.data;
 import ohi.andre.consolelauncher.commands.tuixt.TuixtActivity;
 import ohi.andre.consolelauncher.managers.ContactManager;
 import ohi.andre.consolelauncher.managers.RegexManager;
@@ -187,9 +198,24 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
         startActivity(startMain);
     };
 
+    Context mContext;
+    Boolean isPermissionGranted = false;
+
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent intent = result.getData();
+                        Log.e("FUTURE", "STOP HERE");
+                    }
+                }
+            });
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
 
         overridePendingTransition(0, 0);
 
@@ -197,19 +223,30 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
             return;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, LauncherActivity.STARTING_PERMISSION);
-        } else {
-            canApplyTheme = true;
-            finishOnCreate();
+        if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE ,Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, LauncherActivity.STARTING_PERMISSION);
         }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+
+                startActivityForResult(new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID)), COMMAND_REQUEST_PERMISSION);
+//              DF32 edit for future https://stackoverflow.com/a/68540221/6437140
+//                Intent I = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+//                mStartForResult.launch(I);
+
+            }
+
+        canApplyTheme = true;
+        finishOnCreate();
     }
 
     private void finishOnCreate() {
 
+        Log.e("andre", "InsideFinish");
+
         Thread.currentThread().setUncaughtExceptionHandler(new CustomExceptionHandler());
+
+//        if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED))
+//            return;
 
         XMLPrefsManager.loadCommons(this);
         new RegexManager(LauncherActivity.this);
@@ -278,7 +315,7 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
         try {
             NotificationManager.create(this);
         } catch (Exception e) {
-            Tuils.toFile(e);
+            Tuils.log(e);
         }
 
         boolean notifications = XMLPrefsManager.getBoolean(Notifications.show_notifications) || XMLPrefsManager.get(Notifications.show_notifications).equalsIgnoreCase("enabled");
@@ -295,6 +332,7 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
                             Toast.makeText(this, R.string.no_notification_access, Toast.LENGTH_LONG).show();
                         } else {
                             startActivity(i);
+                            Toast.makeText(this, R.string.notification_request, Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -519,6 +557,8 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, @NonNull int[] grantResults) {
+        // Not sure if this should be at the top or bottom here!
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (permissions.length > 0 && permissions[0].equals(Manifest.permission.READ_CONTACTS) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(new Intent(ContactManager.ACTION_REFRESH));
         }
@@ -578,8 +618,6 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // Not sure if this should be at the top or bottom here!
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

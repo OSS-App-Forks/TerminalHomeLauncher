@@ -1,16 +1,31 @@
 apply plugin: 'com.android.application'
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/home/horcrux/AndroidStudioProjects/DebugKeys/Debug.jks')
+            storePassword 'qqqqqq'
+            keyAlias 'key0'
+            keyPassword 'qqqqqq'
+        }
+        release {
+            storeFile file('/home/horcrux/AndroidStudioProjects/DebugKeys/Debug.jks')
+            storePassword 'qqqqqq'
+            keyAlias 'key0'
+            keyPassword 'qqqqqq'
+        }
+    }
     compileSdkVersion 32
 
     defaultConfig {
         applicationId "ohi.andre.consolelauncher"
 
         minSdkVersion 24
-        targetSdkVersion 27
+        targetSdkVersion 32
         flavorDimensions "default"
 
         versionName "v6.17"
         versionCode 212
+        signingConfig signingConfigs.debug
     }
     buildTypes {
         release {

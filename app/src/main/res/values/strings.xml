@@ -55,6 +55,7 @@
 
     <!-- notifications -->
     <string name="notification_reader">T-UI notification reader</string>
+    <string name="notification_request">Please grant Notification access to display Notifications in the Console!</string>
     <string name="no_notification_access">Unfortunately t-ui can\'t redirect you to the \"Notification access\" page of your system settings</string>
     <string name="notification_low_api">Notifications are supported on Android 4.3+ only. Use \'config -set show_notifications false\' to disable this message</string>
 
