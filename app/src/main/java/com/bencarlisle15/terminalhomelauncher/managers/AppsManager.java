@@ -5,8 +5,6 @@ import static com.bencarlisle15.terminalhomelauncher.managers.xml.XMLPrefsManage
 import static com.bencarlisle15.terminalhomelauncher.managers.xml.XMLPrefsManager.set;
 import static com.bencarlisle15.terminalhomelauncher.managers.xml.XMLPrefsManager.writeTo;
 
-import static java.security.AccessController.getContext;
-
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,7 +12,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -22,27 +19,19 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.content.pm.ShortcutInfo;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.Process;
-import android.os.UserHandle;
 import android.util.Log;
 
-import static android.content.pm.LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC;
-import static android.content.pm.LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST;
-import static android.content.pm.LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bencarlisle15.terminalhomelauncher.MainManager;
 import com.bencarlisle15.terminalhomelauncher.R;
 import com.bencarlisle15.terminalhomelauncher.UIManager;
 import com.bencarlisle15.terminalhomelauncher.commands.main.MainPack;
-import com.bencarlisle15.terminalhomelauncher.commands.main.raw.App;
 import com.bencarlisle15.terminalhomelauncher.managers.xml.XMLPrefsManager;
 import com.bencarlisle15.terminalhomelauncher.managers.xml.classes.XMLPrefsElement;
 import com.bencarlisle15.terminalhomelauncher.managers.xml.classes.XMLPrefsEntry;
@@ -106,22 +95,6 @@ public class AppsManager implements XMLPrefsElement {
     private final String appInstalledFormat;
     private final String appUninstalledFormat;
     int appInstalledColor, appUninstalledColor;
-    private PackageManager _packageManager;
-    private List<App> _apps = new ArrayList<>();
-    private List<App> _nonFilteredApps = new ArrayList<>();
-//    public final List<AppUpdateListener> _updateListeners = new ArrayList<>();
-//    public final List<AppDeleteListener> _deleteListeners = new ArrayList<>();
-    public boolean _recreateAfterGettingApps;
-    private AsyncTask _task;
-    private Context _context;
-
-    public PackageManager getPackageManager() {
-        return _packageManager;
-    }
-
-    public Context getContext() {
-        return _context;
-    }
 
     @Override
     public String[] delete() {
@@ -160,8 +133,6 @@ public class AppsManager implements XMLPrefsElement {
         instance = this;
 
         this.context = context;
-        _context = context;
-        _packageManager = context.getPackageManager();
 
         appInstalledFormat = XMLPrefsManager.getBoolean(Ui.show_app_installed) ? XMLPrefsManager.get(Behavior.app_installed_format) : null;
         appUninstalledFormat = XMLPrefsManager.getBoolean(Ui.show_app_uninstalled) ? XMLPrefsManager.get(Behavior.app_uninstalled_format) : null;
@@ -416,27 +387,6 @@ public class AppsManager implements XMLPrefsElement {
         groups.sort((o1, o2) -> Tuils.alphabeticCompare(o1.name(), o2.name()));
     }
 
-    @Nullable
-    public static List<ShortcutInfo> getShortcutInfo(@NonNull Context context, @NonNull String packageName) {
-        List<ShortcutInfo> shortcutInfo = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
-            LauncherApps launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
-            LauncherApps.ShortcutQuery shortcutQuery = new LauncherApps.ShortcutQuery();
-            shortcutQuery.setQueryFlags(FLAG_MATCH_DYNAMIC | FLAG_MATCH_MANIFEST | FLAG_MATCH_PINNED);
-            shortcutQuery.setPackage(packageName);
-            try {
-                shortcutInfo = launcherApps.getShortcuts(shortcutQuery, Process.myUserHandle());
-            } catch (SecurityException e) {
-                Log.w(AppsManager.class.getSimpleName(), "Can't get shortcuts info. App is not set as default launcher");
-            }
-        }
-        return shortcutInfo;
-    }
-
-    public List<App> getNonFilteredApps() {
-        return _nonFilteredApps;
-    }
-
     private List<LaunchInfo> createAppMap(PackageManager mgr) {
         List<LaunchInfo> infos = new ArrayList<>();
 
@@ -460,50 +410,22 @@ public class AppsManager implements XMLPrefsElement {
         }
 //        }
 
-//        // work profile support POC
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Tuils.isMyLauncherDefault(context.getPackageManager())) {
-//            LauncherApps launcherApps = (LauncherApps) _context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
-//            List<UserHandle> profiles = launcherApps.getProfiles();
-//            for (UserHandle userHandle : profiles) {
-//                List<LauncherActivityInfo> apps = launcherApps.getActivityList(null, userHandle);
-//                for (LauncherActivityInfo info : apps) {
-//                    List<ShortcutInfo> shortcutInfo = getShortcutInfo(getContext(), info.getComponentName().getPackageName());
-//                    App app = new App(_packageManager, info, shortcutInfo);
-//                    app._userHandle = userHandle;
-//                    Log.d("PACKAGEMANAGER", "adding work profile to non filtered list: {" + app._label +" }" +
-//                            "\n{ " + app._packageName + " }, " +
-//                            "\n{ " + app._className + " }");
-////                    nonFilteredAppsTemp.add(app);
-//                }
-//            }
-//        }
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && Tuils.isMyLauncherDefault(context.getPackageManager())) {
+            LauncherApps launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+            for (ResolveInfo ri : main) {
+                LaunchInfo li = new LaunchInfo(ri.activityInfo.packageName, ri.activityInfo.name, ri.loadLabel(mgr).toString());
 
-
-        // work profile support POC
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Tuils.isMyLauncherDefault(context.getPackageManager())) {
-            LauncherApps launcherApps = (LauncherApps) _context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
-            // LauncherApps.getProfiles() is not available for API 25, so just get all associated user profile handlers
-            List<UserHandle> profiles = launcherApps.getProfiles();
-            for (UserHandle userHandle : profiles) {
-                List<LauncherActivityInfo> apps = launcherApps.getActivityList(null, userHandle);
-                for (LauncherActivityInfo info : apps) {
-                    List<ShortcutInfo> shortcutInfo = getShortcutInfo(getContext(), info.getComponentName().getPackageName());
-                    App app = new App(_packageManager, info, shortcutInfo);
-                    app._userHandle = userHandle;
-                    LaunchInfo li = new LaunchInfo(app._packageName, app._className,app._label);
-                    try {
-                        LauncherApps.ShortcutQuery query = new LauncherApps.ShortcutQuery();
-                        query.setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST | LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC);
-                        query.setPackage(li.componentName.getPackageName());
-                        li.setShortcuts(launcherApps.getShortcuts(query, Process.myUserHandle()));
-                    } catch (Throwable e) {
+                try {
+                    LauncherApps.ShortcutQuery query = new LauncherApps.ShortcutQuery();
+                    query.setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST | LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC);
+                    query.setPackage(li.componentName.getPackageName());
+                    li.setShortcuts(launcherApps.getShortcuts(query, Process.myUserHandle()));
+                } catch (Throwable e) {
 //                    t-ui is not the default launcher
-                        Tuils.log(e);
-                    }
-
-                    infos.add(li);
-                    Log.d("PACKAGEMANAGER","Added: " + li.lowercaseLabel );
+                    Tuils.log(e);
                 }
+
+                infos.add(li);
             }
         } else {
             for (ResolveInfo ri : main) {

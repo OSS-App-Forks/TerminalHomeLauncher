@@ -1,4 +1,5 @@
 package com.bencarlisle15.terminalhomelauncher.managers;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
