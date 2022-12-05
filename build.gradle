@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0'
+        classpath 'com.android.tools.build:gradle:7.3.1'
     }
 }
 
@@ -17,6 +17,9 @@ task clean(type: Delete) {
 allprojects {
     repositories {
         google()
+        maven { url "https://jitpack.io" } // for MPAndroidChard, not on jcenter yet
+        maven { url "https://maven.google.com" } // for appcompat
+        mavenLocal()        // for updates to local rstack
         mavenCentral()
     }
 }

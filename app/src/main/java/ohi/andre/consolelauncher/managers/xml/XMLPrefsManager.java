@@ -11,6 +11,7 @@ import org.xml.sax.SAXParseException;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,6 +136,8 @@ public class XMLPrefsManager {
     public static void loadCommons(Context context) {
         if(commonsLoaded) return;
         commonsLoaded = true;
+
+        Tuils.setFolder(context);
 
         File folder = Tuils.getFolder();
         if(folder == null) {

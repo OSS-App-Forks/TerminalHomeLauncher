@@ -1,5 +1,6 @@
 package ohi.andre.consolelauncher.tuils;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
@@ -14,6 +15,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PorterDuff;
@@ -31,8 +34,10 @@ import android.os.Process;
 import android.os.StatFs;
 import android.provider.Settings;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.telephony.TelephonyManager;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -122,9 +127,10 @@ public class Tuils {
     public static String fontPath = null;
 
     static Pattern calculusPattern = Pattern.compile("([\\+\\-\\*\\/\\^])(\\d+\\.?\\d*)");
+
     public static double textCalculus(double input, String text) {
         Matcher m = calculusPattern.matcher(text);
-        while(m.find()) {
+        while (m.find()) {
             char operator = m.group(1).charAt(0);
             double value = Double.parseDouble(m.group(2));
 
@@ -153,7 +159,7 @@ public class Tuils {
     }
 
     public static Typeface getTypeface(Context context) {
-        if(globalTypeface == null) {
+        if (globalTypeface == null) {
             try {
                 XMLPrefsManager.loadCommons(context);
             } catch (Exception e) {
@@ -161,36 +167,37 @@ public class Tuils {
             }
 
             boolean systemFont = XMLPrefsManager.getBoolean(Ui.system_font);
-            if(systemFont) globalTypeface = Typeface.DEFAULT;
+            if (systemFont) globalTypeface = Typeface.DEFAULT;
             else {
                 File tui = Tuils.getFolder();
-                if(tui == null) {
+                if (tui == null) {
                     return Typeface.createFromAsset(context.getAssets(), "lucida_console.ttf");
                 }
 
                 Pattern p = Pattern.compile(".[ot]tf$");
 
                 File font = null;
-                for(File f : tui.listFiles()) {
+                for (File f : tui.listFiles()) {
                     String name = f.getName();
-                    if(p.matcher(name).find()) {
+                    if (p.matcher(name).find()) {
                         font = f;
                         fontPath = f.getAbsolutePath();
                         break;
                     }
                 }
 
-                if(font != null) {
+                if (font != null) {
                     try {
                         globalTypeface = Typeface.createFromFile(font);
-                        if(globalTypeface == null) throw new UnsupportedOperationException();
+                        if (globalTypeface == null) throw new UnsupportedOperationException();
                     } catch (Exception e) {
                         globalTypeface = null;
                     }
                 }
             }
 
-            if(globalTypeface == null) globalTypeface = systemFont ? Typeface.DEFAULT : Typeface.createFromAsset(context.getAssets(), "lucida_console.ttf");
+            if (globalTypeface == null)
+                globalTypeface = systemFont ? Typeface.DEFAULT : Typeface.createFromAsset(context.getAssets(), "lucida_console.ttf");
         }
         return globalTypeface;
     }
@@ -216,7 +223,7 @@ public class Tuils {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         boolean collectorRunning = false;
         List<ActivityManager.RunningServiceInfo> runningServices = manager.getRunningServices(Integer.MAX_VALUE);
-        if (runningServices == null ) {
+        if (runningServices == null) {
             return false;
         }
 
@@ -232,10 +239,10 @@ public class Tuils {
     }
 
     public static boolean arrayContains(int[] array, int value) {
-        if(array == null) return false;
+        if (array == null) return false;
 
-        for(int i : array) {
-            if(i == value) {
+        for (int i : array) {
+            if (i == value) {
                 return true;
             }
         }
@@ -261,7 +268,7 @@ public class Tuils {
             batteryReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    if(batteryUpdate == null) return;
+                    if (batteryUpdate == null) return;
 
                     switch (intent.getAction()) {
                         case Intent.ACTION_BATTERY_CHANGED:
@@ -291,7 +298,7 @@ public class Tuils {
     }
 
     public static void unregisterBatteryReceiver(Context context) {
-        if(batteryReceiver != null) context.unregisterReceiver(batteryReceiver);
+        if (batteryReceiver != null) context.unregisterReceiver(batteryReceiver);
     }
 
     public static boolean containsExtension(String[] array, String value) {
@@ -312,18 +319,17 @@ public class Tuils {
         List<Song> songs = new ArrayList<>();
 
         File[] files = folder.listFiles();
-        if(files == null || files.length == 0) {
+        if (files == null || files.length == 0) {
             return songs;
         }
 
         for (File file : files) {
             if (file.isDirectory()) {
                 List<Song> s = getSongsInFolder(file);
-                if(s != null) {
+                if (s != null) {
                     songs.addAll(s);
                 }
-            }
-            else if (containsExtension(MusicManager2.MUSIC_EXTENSIONS, file.getName())) {
+            } else if (containsExtension(MusicManager2.MUSIC_EXTENSIONS, file.getName())) {
                 songs.add(new Song(file));
             }
         }
@@ -361,7 +367,7 @@ public class Tuils {
     public static void write(File file, String separator, String... ss) throws Exception {
         FileOutputStream headerStream = new FileOutputStream(file, false);
 
-        for(int c = 0; c < ss.length - 1; c++) {
+        for (int c = 0; c < ss.length - 1; c++) {
             headerStream.write(ss[c].getBytes());
             headerStream.write(separator.getBytes());
         }
@@ -451,7 +457,7 @@ public class Tuils {
     }
 
     public static double getAvailableSpace(File dir, int unit) {
-        if(dir == null) return -1;
+        if (dir == null) return -1;
 
         StatFs statFs = new StatFs(dir.getAbsolutePath());
         long blocks = statFs.getAvailableBlocks();
@@ -459,7 +465,7 @@ public class Tuils {
     }
 
     public static double getTotaleSpace(File dir, int unit) {
-        if(dir == null) return -1;
+        if (dir == null) return -1;
 
         StatFs statFs = new StatFs(dir.getAbsolutePath());
         long blocks = statFs.getBlockCount();
@@ -492,7 +498,8 @@ public class Tuils {
             case BYTE:
                 result = bytes;
                 break;
-            default: return -1;
+            default:
+                return -1;
         }
 
         return round(result, 2);
@@ -537,24 +544,27 @@ public class Tuils {
     }
 
     public static SpannableString span(Context context, int bgColor, int foreColor, CharSequence text, int size) {
-        if(text == null) {
+        if (text == null) {
             text = Tuils.EMPTYSTRING;
         }
 
         SpannableString spannableString;
-        if(text instanceof SpannableString) spannableString = (SpannableString) text;
+        if (text instanceof SpannableString) spannableString = (SpannableString) text;
         else spannableString = new SpannableString(text);
 
-        if(size != Integer.MAX_VALUE && context != null) spannableString.setSpan(new AbsoluteSizeSpan(convertSpToPixels(size, context)), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        if(foreColor != Integer.MAX_VALUE) spannableString.setSpan(new ForegroundColorSpan(foreColor), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        if(bgColor != Integer.MAX_VALUE) spannableString.setSpan(new BackgroundColorSpan(bgColor), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (size != Integer.MAX_VALUE && context != null)
+            spannableString.setSpan(new AbsoluteSizeSpan(convertSpToPixels(size, context)), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (foreColor != Integer.MAX_VALUE)
+            spannableString.setSpan(new ForegroundColorSpan(foreColor), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (bgColor != Integer.MAX_VALUE)
+            spannableString.setSpan(new BackgroundColorSpan(bgColor), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         return spannableString;
     }
 
     public static int span(int bgColor, SpannableString text, String section, int fromIndex) {
         int index = text.toString().indexOf(section, fromIndex);
-        if(index == -1) return index;
+        if (index == -1) return index;
 
         text.setSpan(new BackgroundColorSpan(bgColor), index, index + section.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -675,42 +685,42 @@ public class Tuils {
         }
 
         public <T> T get(Class<T> c, int index) {
-            if(index < args.length) return (T) args[index];
+            if (index < args.length) return (T) args[index];
             return null;
         }
     }
 
     public static void deleteContentOnly(File dir) {
         File[] files = dir.listFiles();
-        if(files == null) return;
+        if (files == null) return;
 
-        for(File f : dir.listFiles()) {
-            if(f.isDirectory()) delete(f);
+        for (File f : dir.listFiles()) {
+            if (f.isDirectory()) delete(f);
             f.delete();
         }
     }
 
     public static void delete(File dir) {
         File[] files = dir.listFiles();
-        if(files == null) return;
+        if (files == null) return;
 
-        for(File f : dir.listFiles()) {
-            if(f.isDirectory()) delete(f);
+        for (File f : dir.listFiles()) {
+            if (f.isDirectory()) delete(f);
             f.delete();
         }
         dir.delete();
     }
 
     public static boolean insertOld(File oldFile) {
-        if(oldFile == null || !oldFile.exists()) return false;
+        if (oldFile == null || !oldFile.exists()) return false;
 
         String oldPath = oldFile.getAbsolutePath();
 
         File oldFolder = new File(Tuils.getFolder(), "old");
-        if(!oldFolder.exists()) oldFolder.mkdir();
+        if (!oldFolder.exists()) oldFolder.mkdir();
 
         File dest = new File(oldFolder, oldFile.getName());
-        if(dest.exists()) dest.delete();
+        if (dest.exists()) dest.delete();
 
         return oldFile.renameTo(dest) && new File(oldPath).delete();
     }
@@ -719,18 +729,18 @@ public class Tuils {
         File old = new File(Tuils.getFolder(), "old");
         File file = new File(old, name);
 
-        if(file.exists()) return file;
+        if (file.exists()) return file;
         return null;
     }
 
     public static void deepView(View v) {
         Tuils.log(v.toString());
 
-        if(!(v instanceof ViewGroup)) return;
+        if (!(v instanceof ViewGroup)) return;
         ViewGroup g = (ViewGroup) v;
 
         Tuils.log(g.getChildCount());
-        for(int c = 0; c < g.getChildCount(); c++) deepView(g.getChildAt(c));
+        for (int c = 0; c < g.getChildCount(); c++) deepView(g.getChildAt(c));
 
         Tuils.log("end of parents of: " + v.toString());
     }
@@ -740,10 +750,10 @@ public class Tuils {
     public static void deepClickView(View v) {
         v.setOnClickListener(deepClickListener);
 
-        if(!(v instanceof ViewGroup)) return;
+        if (!(v instanceof ViewGroup)) return;
         ViewGroup g = (ViewGroup) v;
 
-        for(int c = 0; c < g.getChildCount(); c++) deepClickView(g.getChildAt(c));
+        for (int c = 0; c < g.getChildCount(); c++) deepClickView(g.getChildAt(c));
     }
 
     public static void scaleImage(ImageView view, int newX, int newY) throws NoSuchElementException {
@@ -799,7 +809,7 @@ public class Tuils {
 
     public static int dpToPx(Context context, int dp) {
         float density = context.getApplicationContext().getResources().getDisplayMetrics().density;
-        return Math.round((float)dp * density);
+        return Math.round((float) dp * density);
     }
 
     public static void sendOutput(Context context, int res) {
@@ -852,8 +862,9 @@ public class Tuils {
         intent.putExtra(PrivateIOReceiver.COLOR, color);
         intent.putExtra(PrivateIOReceiver.TYPE, type);
 
-        if(action instanceof String) intent.putExtra(PrivateIOReceiver.ACTION, (String) action);
-        else if(action instanceof Parcelable) intent.putExtra(PrivateIOReceiver.ACTION, (Parcelable) action);
+        if (action instanceof String) intent.putExtra(PrivateIOReceiver.ACTION, (String) action);
+        else if (action instanceof Parcelable)
+            intent.putExtra(PrivateIOReceiver.ACTION, (Parcelable) action);
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
@@ -868,11 +879,14 @@ public class Tuils {
         intent.putExtra(PrivateIOReceiver.COLOR, color);
         intent.putExtra(PrivateIOReceiver.TYPE, type);
 
-        if(action instanceof String) intent.putExtra(PrivateIOReceiver.ACTION, (String) action);
-        else if(action instanceof Parcelable) intent.putExtra(PrivateIOReceiver.ACTION, (Parcelable) action);
+        if (action instanceof String) intent.putExtra(PrivateIOReceiver.ACTION, (String) action);
+        else if (action instanceof Parcelable)
+            intent.putExtra(PrivateIOReceiver.ACTION, (Parcelable) action);
 
-        if(longAction instanceof String) intent.putExtra(PrivateIOReceiver.LONG_ACTION, (String) longAction);
-        else if(longAction instanceof Parcelable) intent.putExtra(PrivateIOReceiver.LONG_ACTION, (Parcelable) longAction);
+        if (longAction instanceof String)
+            intent.putExtra(PrivateIOReceiver.LONG_ACTION, (String) longAction);
+        else if (longAction instanceof Parcelable)
+            intent.putExtra(PrivateIOReceiver.LONG_ACTION, (Parcelable) longAction);
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
@@ -897,20 +911,21 @@ public class Tuils {
     }
 
     public static long totalRam() {
-        if(total > 0) return total;
+        if (total > 0) return total;
 
         BufferedReader reader;
         try {
             reader = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/meminfo")));
 
             String line;
-            while((line = reader.readLine()) != null) {
-                if(line.startsWith("MemTotal")) {
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("MemTotal")) {
                     line = line.replaceAll("\\D+", Tuils.EMPTYSTRING);
                     return Long.parseLong(line);
                 }
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return 0;
     }
 
@@ -941,23 +956,23 @@ public class Tuils {
     }
 
     public static int scale(int[] from, int[] to, int n) {
-        return (to[1] - to[0])*(n - from[0])/(from[1] - from[0]) + to[0];
+        return (to[1] - to[0]) * (n - from[0]) / (from[1] - from[0]) + to[0];
     }
 
     public static String[] toString(Enum[] enums) {
         String[] arr = new String[enums.length];
-        for(int count = 0; count < enums.length; count++) arr[count] = enums[count].name();
+        for (int count = 0; count < enums.length; count++) arr[count] = enums[count].name();
         return arr;
     }
 
     private static String getNicePath(String filePath) {
-        if(filePath == null) return "null";
+        if (filePath == null) return "null";
 
         String home = XMLPrefsManager.get(File.class, Behavior.home_path).getAbsolutePath();
 
-        if(filePath.equals(home)) {
+        if (filePath.equals(home)) {
             return "~";
-        } else if(filePath.startsWith(home)) {
+        } else if (filePath.startsWith(home)) {
             return "~" + filePath.replace(home, Tuils.EMPTYSTRING);
         } else {
             return filePath;
@@ -969,22 +984,24 @@ public class Tuils {
     }
 
     public static int find(Object o, List list) {
-        for(int count = 0; count < list.size(); count++) {
+        for (int count = 0; count < list.size(); count++) {
             Object x = list.get(count);
-            if(x == null) continue;
+            if (x == null) continue;
 
-            if(o == x) return count;
+            if (o == x) return count;
 
             if (o instanceof XMLPrefsSave) {
                 try {
                     if (((XMLPrefsSave) o).label().equals((String) x)) return count;
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
 
             if (o instanceof String && x instanceof XMLPrefsSave) {
                 try {
                     if (((XMLPrefsSave) x).label().equals((String) o)) return count;
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
 
             try {
@@ -999,19 +1016,20 @@ public class Tuils {
     static Pattern pd = Pattern.compile("%d", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
     static Pattern pu = Pattern.compile("%u", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
     static Pattern pp = Pattern.compile("%p", Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
+
     public static String getHint(String currentPath) {
-        if(!XMLPrefsManager.getBoolean(Ui.show_session_info)) return null;
+        if (!XMLPrefsManager.getBoolean(Ui.show_session_info)) return null;
 
         String format = XMLPrefsManager.get(Behavior.session_info_format);
-        if(format.length() == 0) return null;
+        if (format.length() == 0) return null;
 
         String deviceName = XMLPrefsManager.get(Ui.device_name);
-        if(deviceName == null || deviceName.length() == 0) {
+        if (deviceName == null || deviceName.length() == 0) {
             deviceName = Build.DEVICE;
         }
 
         String username = XMLPrefsManager.get(Ui.username);
-        if(username == null) username = Tuils.EMPTYSTRING;
+        if (username == null) username = Tuils.EMPTYSTRING;
 
         format = pd.matcher(format).replaceAll(Matcher.quoteReplacement(deviceName));
         format = pu.matcher(format).replaceAll(Matcher.quoteReplacement(username));
@@ -1035,7 +1053,7 @@ public class Tuils {
         char current = 0;
         for (int count = 0; count < s.size(); count++) {
             String st = s.get(count).trim().toUpperCase();
-            if(st.length() < 0) continue;
+            if (st.length() < 0) continue;
 
             char c = st.charAt(0);
             if (current != c) {
@@ -1057,7 +1075,7 @@ public class Tuils {
     }
 
     public static String toPlanString(String[] strings, String separator) {
-        if(strings == null) {
+        if (strings == null) {
             return Tuils.EMPTYSTRING;
         }
 
@@ -1077,7 +1095,7 @@ public class Tuils {
     }
 
     public static String toPlanString(String separator, List strings) {
-        if(strings == null) {
+        if (strings == null) {
             return Tuils.EMPTYSTRING;
         }
 
@@ -1101,8 +1119,7 @@ public class Tuils {
             trans.transform(source, result);
 
             return sw.toString();
-        }
-        catch (TransformerException e) {
+        } catch (TransformerException e) {
             e.printStackTrace();
             return null;
         }
@@ -1111,18 +1128,18 @@ public class Tuils {
     public static void log(Object o) {
 //        Log.e("andre", Arrays.toString(Thread.currentThread().getStackTrace()));
 
-        if(o instanceof Throwable) {
+        if (o instanceof Throwable) {
             Log.e("andre", "", (Throwable) o);
         } else {
             String text;
-            if(o instanceof Object[]) text = Arrays.toString((Object[]) o);
+            if (o instanceof Object[]) text = Arrays.toString((Object[]) o);
             else text = o.toString();
             Log.e("andre", text);
         }
     }
 
     public static void log(Object o, Object o2) {
-        if(o instanceof Object[] && o2 instanceof Object[]){
+        if (o instanceof Object[] && o2 instanceof Object[]) {
             Log.e("andre", Arrays.toString((Object[]) o) + " -- " + Arrays.toString((Object[]) o2));
         } else {
             Log.e("andre", String.valueOf(o) + " -- " + String.valueOf(o2));
@@ -1132,11 +1149,11 @@ public class Tuils {
     public static void log(Object o, PrintStream to) {
 //        Log.e("andre", Arrays.toString(Thread.currentThread().getStackTrace()));
 
-        if(o instanceof Throwable) {
+        if (o instanceof Throwable) {
             ((Throwable) o).printStackTrace(to);
         } else {
             String text;
-            if(o instanceof Object[]) text = Arrays.toString((Object[]) o);
+            if (o instanceof Object[]) text = Arrays.toString((Object[]) o);
             else text = o.toString();
 
             try {
@@ -1149,7 +1166,7 @@ public class Tuils {
 
     public static void log(Object o, Object o2, OutputStream to) {
         try {
-            if(o instanceof Object[] && o2 instanceof Object[]){
+            if (o instanceof Object[] && o2 instanceof Object[]) {
                 to.write((Arrays.toString((Object[]) o) + " -- " + Arrays.toString((Object[]) o2)).getBytes());
             } else {
                 to.write((String.valueOf(o) + " -- " + String.valueOf(o2)).getBytes());
@@ -1183,11 +1200,12 @@ public class Tuils {
 
             is.close();
             f.close();
-        } catch (Exception e1) {}
+        } catch (Exception e1) {
+        }
     }
 
     public static void toFile(Object o) {
-        if(o == null) return;
+        if (o == null) return;
 
 //            RandomAccessFile f = new RandomAccessFile(new File(Tuils.getFolder(), "crash.txt"), "rw");
 //            f.seek(0);
@@ -1203,7 +1221,7 @@ public class Tuils {
             FileOutputStream stream = new FileOutputStream(new File(Tuils.getFolder(), "crash.txt"));
             stream.write((Tuils.NEWLINE + Tuils.NEWLINE).getBytes());
 
-            if(o instanceof Throwable) {
+            if (o instanceof Throwable) {
                 PrintStream ps = new PrintStream(stream);
                 ((Throwable) o).printStackTrace(ps);
             } else {
@@ -1213,11 +1231,12 @@ public class Tuils {
             stream.write((Tuils.NEWLINE + "----------------------------").getBytes());
 
             stream.close();
-        } catch (Exception e1) {}
+        } catch (Exception e1) {
+        }
     }
 
     public static String toPlanString(List<String> strings, String separator) {
-        if(strings != null) {
+        if (strings != null) {
             String[] object = new String[strings.size()];
             return Tuils.toPlanString(strings.toArray(object), separator);
         }
@@ -1225,7 +1244,7 @@ public class Tuils {
     }
 
     public static String filesToPlanString(List<File> files, String separator) {
-        if(files == null || files.size() == 0) {
+        if (files == null || files.size() == 0) {
             return null;
         }
 
@@ -1245,14 +1264,14 @@ public class Tuils {
     }
 
     public static String toPlanString(Object[] objs, String separator) {
-        if(objs == null) {
+        if (objs == null) {
             return Tuils.EMPTYSTRING;
         }
 
         StringBuilder output = new StringBuilder();
-        for(int count = 0; count < objs.length; count++) {
+        for (int count = 0; count < objs.length; count++) {
             output.append(objs[count]);
-            if(count < objs.length - 1) {
+            if (count < objs.length - 1) {
                 output.append(separator);
             }
         }
@@ -1260,6 +1279,7 @@ public class Tuils {
     }
 
     static Pattern unnecessarySpaces = Pattern.compile("\\s{2,}");
+
     public static String removeUnncesarySpaces(String string) {
         return unnecessarySpaces.matcher(string).replaceAll(Tuils.SPACE);
     }
@@ -1272,7 +1292,7 @@ public class Tuils {
     }
 
     public static boolean isAlpha(String s) {
-        if(s == null) {
+        if (s == null) {
             return false;
         }
         char[] chars = s.toCharArray();
@@ -1285,7 +1305,7 @@ public class Tuils {
     }
 
     public static boolean isPhoneNumber(String s) {
-        if(s == null) {
+        if (s == null) {
             return false;
         }
         char[] chars = s.toCharArray();
@@ -1299,9 +1319,9 @@ public class Tuils {
         return true;
     }
 
-//    return 0 if only digit
+    //    return 0 if only digit
     public static char firstNonDigit(String s) {
-        if(s == null) {
+        if (s == null) {
             return 0;
         }
 
@@ -1317,7 +1337,7 @@ public class Tuils {
     }
 
     public static boolean isNumber(String s) {
-        if(s == null || s.length() == 0) {
+        if (s == null || s.length() == 0) {
             return false;
         }
 
@@ -1342,7 +1362,7 @@ public class Tuils {
         intent.setDataAndType(u, mimetype);
 
         int flags;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION;
         } else {
             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
@@ -1371,17 +1391,16 @@ public class Tuils {
 
     private static Uri buildFile(Context context, File file) {
         Uri uri;
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             uri = Uri.fromFile(file);
-        }
-        else {
+        } else {
             uri = FileProvider.getUriForFile(context, GenericFileProvider.PROVIDER_NAME, file);
         }
         return uri;
     }
 
-    private static File getTuiFolder() {
-        File internalDir = Environment.getExternalStorageDirectory();
+    private static File getTuiFolder(Context context) {
+        File internalDir = context.getFilesDir();
         return new File(internalDir, TUI_FOLDER);
     }
 
@@ -1405,14 +1424,14 @@ public class Tuils {
             double parse() {
                 nextChar();
                 double x = parseExpression();
-                if (pos < str.length()) throw new RuntimeException("Unexpected: " + (char)ch);
+                if (pos < str.length()) throw new RuntimeException("Unexpected: " + (char) ch);
                 return x;
             }
 
             double parseExpression() {
                 double x = parseTerm();
-                for (;;) {
-                    if      (eat('+')) x += parseTerm(); // addition
+                for (; ; ) {
+                    if (eat('+')) x += parseTerm(); // addition
                     else if (eat('-')) x -= parseTerm(); // subtraction
                     else return x;
                 }
@@ -1420,8 +1439,8 @@ public class Tuils {
 
             double parseTerm() {
                 double x = parseFactor();
-                for (;;) {
-                    if      (eat('*')) x *= parseFactor(); // multiplication
+                for (; ; ) {
+                    if (eat('*')) x *= parseFactor(); // multiplication
                     else if (eat('/')) x /= parseFactor(); // division
                     else return x;
                 }
@@ -1449,7 +1468,7 @@ public class Tuils {
                     else if (func.equals("tan")) x = Math.tan(Math.toRadians(x));
                     else throw new RuntimeException("Unknown function: " + func);
                 } else {
-                    throw new RuntimeException("Unexpected: " + (char)ch);
+                    throw new RuntimeException("Unexpected: " + (char) ch);
                 }
 
                 if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
@@ -1461,14 +1480,9 @@ public class Tuils {
 
     public static String getTextFromClipboard(Context context) {
         try {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                ClipboardManager manager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData.Item item = manager.getPrimaryClip().getItemAt(0);
-                return item.getText().toString();
-            } else {
-                android.text.ClipboardManager manager = (android.text.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                return manager.getText().toString();
-            }
+            ClipboardManager manager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData.Item item = manager.getPrimaryClip().getItemAt(0);
+            return item.getText().toString();
         } catch (Exception e) {
             return null;
         }
@@ -1481,25 +1495,29 @@ public class Tuils {
 
     private static final int FILEUPDATE_DELAY = 100;
     private static File folder = null;
+
     public static File getFolder() {
-        if(folder != null) return folder;
+        return folder;
+    }
+
+    public static void setFolder(Context context) {
+        if (folder != null) return;
 
         int elapsedTime = 0;
         while (elapsedTime < 1000) {
-            File tuiFolder = Tuils.getTuiFolder();
-            if(tuiFolder != null && ((tuiFolder.exists() && tuiFolder.isDirectory()) || tuiFolder.mkdir())) {
+            File tuiFolder = Tuils.getTuiFolder(context);
+            if (tuiFolder.exists() && tuiFolder.isDirectory() || tuiFolder.mkdir()) {
                 folder = tuiFolder;
-                return folder;
+                return;
             }
 
             try {
                 Thread.sleep(FILEUPDATE_DELAY);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
 
             elapsedTime += FILEUPDATE_DELAY;
         }
-
-        return null;
     }
 
     public static int alphabeticCompare(String s1, String s2) {
@@ -1526,6 +1544,7 @@ public class Tuils {
     }
 
     private static final String SPACE_REGEXP = "\\s";
+
     public static String removeSpaces(String string) {
         return string.replaceAll(SPACE_REGEXP, EMPTYSTRING);
     }
@@ -1533,6 +1552,16 @@ public class Tuils {
     public static String getNetworkType(Context context) {
         TelephonyManager mTelephonyManager = (TelephonyManager)
                 context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return "TODO";
+        }
         int networkType = mTelephonyManager.getNetworkType();
         switch (networkType) {
             case TelephonyManager.NETWORK_TYPE_GPRS:
@@ -1558,24 +1587,12 @@ public class Tuils {
         }
     }
 
-    public static void setCursorDrawableColor(EditText editText, int color) {
-        try {
-            Field fCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
-            fCursorDrawableRes.setAccessible(true);
-            int mCursorDrawableRes = fCursorDrawableRes.getInt(editText);
-            Field fEditor = TextView.class.getDeclaredField("mEditor");
-            fEditor.setAccessible(true);
-            Object editor = fEditor.get(editText);
-            Class<?> clazz = editor.getClass();
-            Field fCursorDrawable = clazz.getDeclaredField("mCursorDrawable");
-            fCursorDrawable.setAccessible(true);
-            Drawable[] drawables = new Drawable[2];
-            drawables[0] = editText.getContext().getResources().getDrawable(mCursorDrawableRes);
-            drawables[1] = editText.getContext().getResources().getDrawable(mCursorDrawableRes);
-            drawables[0].setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            drawables[1].setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            fCursorDrawable.set(editor, drawables);
-        } catch (Throwable ignored) {}
+    public static void setCursorDrawableColor(Context context, EditText editText, int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Drawable drawable = editText.getTextCursorDrawable();
+            drawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+            editText.setTextCursorDrawable(drawable);
+        }
     }
 
     public static int nOfBytes(File file) {
