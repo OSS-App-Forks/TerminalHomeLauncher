@@ -22,9 +22,9 @@ public class Assist {
         new Assist(activity);
     }
 
-    private View mChildOfContent;
+    private final View mChildOfContent;
     private int usableHeightPrevious;
-    private FrameLayout.LayoutParams frameLayoutParams;
+    private final FrameLayout.LayoutParams frameLayoutParams;
 
     private Assist(Activity activity) {
         FrameLayout content = (FrameLayout) activity.findViewById(android.R.id.content);

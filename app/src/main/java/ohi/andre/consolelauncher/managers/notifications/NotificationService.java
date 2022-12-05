@@ -47,9 +47,9 @@ public class NotificationService extends NotificationListenerService {
     public static final String DESTROY = "destroy";
 
     private final int UPDATE_TIME = 2000;
-    private String LINES_LABEL = "Lines";
-    private String ANDROID_LABEL_PREFIX = "android.";
-    private String NULL_LABEL = "null";
+    private final String LINES_LABEL = "Lines";
+    private final String ANDROID_LABEL_PREFIX = "android.";
+    private final String NULL_LABEL = "null";
 
     HashMap<String, List<Notification>> pastNotifications;
     Handler handler = new Handler();

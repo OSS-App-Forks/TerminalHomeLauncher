@@ -77,8 +77,8 @@ final class HtmlEscapeUtil {
     /*
      * Small utility char arrays for hexadecimal conversion
      */
-    private static char[] HEXA_CHARS_UPPER = "0123456789ABCDEF".toCharArray();
-    private static char[] HEXA_CHARS_LOWER = "0123456789abcdef".toCharArray();
+    private static final char[] HEXA_CHARS_UPPER = "0123456789ABCDEF".toCharArray();
+    private static final char[] HEXA_CHARS_LOWER = "0123456789abcdef".toCharArray();
 
 
 
@@ -177,11 +177,11 @@ final class HtmlEscapeUtil {
             if (useNCRs) {
                 // We will try to use an NCR
 
-                if (codepoint < symbols.NCRS_BY_CODEPOINT_LEN) {
+                if (codepoint < HtmlEscapeSymbols.NCRS_BY_CODEPOINT_LEN) {
                     // codepoint < 0x2fff - all HTML4, most HTML5
 
                     final short ncrIndex = symbols.NCRS_BY_CODEPOINT[codepoint];
-                    if (ncrIndex != symbols.NO_NCR) {
+                    if (ncrIndex != HtmlEscapeSymbols.NO_NCR) {
                         // There is an NCR for this codepoint!
                         strBuilder.append(symbols.SORTED_NCRS[ncrIndex]);
                         continue;
@@ -209,7 +209,7 @@ final class HtmlEscapeUtil {
                 strBuilder.append(Integer.toHexString(codepoint));
             } else {
                 strBuilder.append(REFERENCE_DECIMAL_PREFIX);
-                strBuilder.append(String.valueOf(codepoint));
+                strBuilder.append(codepoint);
             }
             strBuilder.append(REFERENCE_SUFFIX);
 
@@ -321,11 +321,11 @@ final class HtmlEscapeUtil {
             if (useNCRs) {
                 // We will try to use an NCR
 
-                if (codepoint < symbols.NCRS_BY_CODEPOINT_LEN) {
+                if (codepoint < HtmlEscapeSymbols.NCRS_BY_CODEPOINT_LEN) {
                     // codepoint < 0x2fff - all HTML4, most HTML5
 
                     final short ncrIndex = symbols.NCRS_BY_CODEPOINT[codepoint];
-                    if (ncrIndex != symbols.NO_NCR) {
+                    if (ncrIndex != HtmlEscapeSymbols.NO_NCR) {
                         // There is an NCR for this codepoint!
                         writer.write(symbols.SORTED_NCRS[ncrIndex]);
                         continue;
@@ -397,7 +397,7 @@ final class HtmlEscapeUtil {
              * Shortcut: most characters will be ASCII/Alphanumeric, and we won't need to do anything at
              * all for them
              */
-            if (c <= symbols.MAX_ASCII_CHAR && level < symbols.ESCAPE_LEVELS[c]) {
+            if (c <= HtmlEscapeSymbols.MAX_ASCII_CHAR && level < symbols.ESCAPE_LEVELS[c]) {
                 continue;
             }
 
@@ -405,7 +405,7 @@ final class HtmlEscapeUtil {
             /*
              * Shortcut: we might not want to escape non-ASCII chars at all either.
              */
-            if (c > symbols.MAX_ASCII_CHAR && level < symbols.ESCAPE_LEVELS[symbols.MAX_ASCII_CHAR + 1]) {
+            if (c > HtmlEscapeSymbols.MAX_ASCII_CHAR && level < symbols.ESCAPE_LEVELS[HtmlEscapeSymbols.MAX_ASCII_CHAR + 1]) {
                 continue;
             }
 
@@ -444,11 +444,11 @@ final class HtmlEscapeUtil {
             if (useNCRs) {
                 // We will try to use an NCR
 
-                if (codepoint < symbols.NCRS_BY_CODEPOINT_LEN) {
+                if (codepoint < HtmlEscapeSymbols.NCRS_BY_CODEPOINT_LEN) {
                     // codepoint < 0x2fff - all HTML4, most HTML5
 
                     final short ncrIndex = symbols.NCRS_BY_CODEPOINT[codepoint];
-                    if (ncrIndex != symbols.NO_NCR) {
+                    if (ncrIndex != HtmlEscapeSymbols.NO_NCR) {
                         // There is an NCR for this codepoint!
                         writer.write(symbols.SORTED_NCRS[ncrIndex]);
                         continue;

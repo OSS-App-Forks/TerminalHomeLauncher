@@ -16,7 +16,7 @@ import ohi.andre.consolelauncher.tuils.Tuils;
 
 public class ShellHolder {
 
-    private Context context;
+    private final Context context;
 
     public ShellHolder(Context context) {
         this.context = context;

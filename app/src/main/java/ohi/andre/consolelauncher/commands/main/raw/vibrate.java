@@ -43,7 +43,7 @@ public class vibrate implements CommandAbstraction {
             }
 
             String[] split = text.split(separator + Tuils.EMPTYSTRING);
-            long pattern[] = new long[split.length];
+            long[] pattern = new long[split.length];
 
             for(int c = 0; c < split.length; c++) {
                 try {

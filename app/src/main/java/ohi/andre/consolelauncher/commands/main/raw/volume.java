@@ -90,7 +90,7 @@ public class volume extends ParamCommand {
             }
         },
         get {
-            String[] labels = {"Voice call", "System", "Ring", "Media", "Alarm", "Notifications"};
+            final String[] labels = {"Voice call", "System", "Ring", "Media", "Alarm", "Notifications"};
 
             private void appendInfo(StringBuilder builder, AudioManager manager, int stream) {
                 builder.append(labels[stream]).append(":").append(Tuils.SPACE).append(manager.getStreamVolume(stream) * 100 / manager.getStreamMaxVolume(stream)).append("%").append(Tuils.NEWLINE);

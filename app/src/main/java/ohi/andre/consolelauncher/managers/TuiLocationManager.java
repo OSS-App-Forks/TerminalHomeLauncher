@@ -46,7 +46,7 @@ public class TuiLocationManager {
     public boolean locationAvailable = false;
     public double latitude, longitude;
 
-    private List<String> actionsPool;
+    private final List<String> actionsPool;
 
     private static TuiLocationManager instance;
     public static TuiLocationManager instance(Context context) {

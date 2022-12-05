@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -139,10 +140,10 @@ public class Shell {
             STDERR.start();
             try {
                 for (String write : commands) {
-                    STDIN.write((write + "\n").getBytes("UTF-8"));
+                    STDIN.write((write + "\n").getBytes(StandardCharsets.UTF_8));
                     STDIN.flush();
                 }
-                STDIN.write("exit\n".getBytes("UTF-8"));
+                STDIN.write("exit\n".getBytes(StandardCharsets.UTF_8));
                 STDIN.flush();
             } catch (IOException e) {
                 if (e.getMessage().contains("EPIPE") || e.getMessage().contains("Stream closed")) {
@@ -271,7 +272,7 @@ public class Shell {
      */
     public static class SU {
         private static Boolean isSELinuxEnforcing = null;
-        private static String[] suVersion = new String[]{
+        private static final String[] suVersion = new String[]{
                 null, null
         };
 
@@ -619,8 +620,8 @@ public class Shell {
         private boolean autoHandler = true;
         private String shell = "sh";
         private boolean wantSTDERR = false;
-        private List<Command> commands = new LinkedList<>();
-        private Map<String, String> environment = new HashMap<>();
+        private final List<Command> commands = new LinkedList<>();
+        private final Map<String, String> environment = new HashMap<>();
         private OnLineListener onSTDOUTLineListener = null;
         private OnLineListener onSTDERRLineListener = null;
         private int watchdogTimeout = 0;
@@ -1291,10 +1292,10 @@ public class Shell {
                         this.command = command;
                         startWatchdog();
                         for (String write : command.commands) {
-                            STDIN.write((write + "\n").getBytes("UTF-8"));
+                            STDIN.write((write + "\n").getBytes(StandardCharsets.UTF_8));
                         }
-                        STDIN.write(("echo " + command.marker + " $?\n").getBytes("UTF-8"));
-                        STDIN.write(("echo " + command.marker + " >&2\n").getBytes("UTF-8"));
+                        STDIN.write(("echo " + command.marker + " $?\n").getBytes(StandardCharsets.UTF_8));
+                        STDIN.write(("echo " + command.marker + " >&2\n").getBytes(StandardCharsets.UTF_8));
                         STDIN.flush();
                     } catch (IOException e) {
                         // STDIN might have closed
@@ -1552,7 +1553,7 @@ public class Shell {
 
             try {
                 try {
-                    STDIN.write(("exit\n").getBytes("UTF-8"));
+                    STDIN.write(("exit\n").getBytes(StandardCharsets.UTF_8));
                     STDIN.flush();
                 } catch (IOException e) {
                     if (e.getMessage().contains("EPIPE") || e.getMessage().contains("Stream closed")) {

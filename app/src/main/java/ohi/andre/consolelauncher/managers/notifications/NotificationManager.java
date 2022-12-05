@@ -39,7 +39,7 @@ import static ohi.andre.consolelauncher.managers.xml.XMLPrefsManager.writeTo;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class NotificationManager implements XMLPrefsElement {
 
-    private static String COLOR_ATTRIBUTE = "color";
+    private static final String COLOR_ATTRIBUTE = "color";
     public static String ENABLED_ATTRIBUTE = "enabled";
     public static String ID_ATTRIBUTE = "id";
     public static String FORMAT_ATTRIBUTE = "format";

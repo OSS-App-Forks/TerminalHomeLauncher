@@ -43,7 +43,7 @@ public class XMLPrefsManager {
     public static final String XML_DEFAULT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     public static final String VALUE_ATTRIBUTE = "value";
 
-    private static DocumentBuilderFactory factory;
+    private static final DocumentBuilderFactory factory;
     private static DocumentBuilder builder;
 
     static {
@@ -463,11 +463,11 @@ public class XMLPrefsManager {
         return setMany(file, new String[] {elementName}, thatHasThose, forValues, attributeNames, values, addIfNotFound);
     }
 
-    public static String setMany(File file, String elementNames[], String[] attributeNames, String[][] attributeValues) {
+    public static String setMany(File file, String[] elementNames, String[] attributeNames, String[][] attributeValues) {
         return setMany(file, elementNames, null, null, attributeNames, attributeValues, true);
     }
 
-    public static String setMany(File file, String elementNames[], String[] thatHasThose, String[] forValues, String[] attributeNames, String[][] attributeValues, boolean addIfNotFound) {
+    public static String setMany(File file, String[] elementNames, String[] thatHasThose, String[] forValues, String[] attributeNames, String[][] attributeValues, boolean addIfNotFound) {
         try {
             Object[] o;
             try {

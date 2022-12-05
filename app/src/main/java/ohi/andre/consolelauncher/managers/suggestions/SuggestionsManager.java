@@ -76,45 +76,48 @@ public class SuggestionsManager {
     private final String[] FILE_SPLITTERS = {Tuils.SPACE, "-", "_"};
     private final String[] XML_PREFS_SPLITTERS = {"_"};
 
-    private boolean showAliasDefault, clickToLaunch, showAppsGpDefault, enabled;
-    private int minCmdPriority;
+    private final boolean showAliasDefault;
+    private final boolean clickToLaunch;
+    private final boolean showAppsGpDefault;
+    private boolean enabled;
+    private final int minCmdPriority;
 
-    private String multipleCmdSeparator;
+    private final String multipleCmdSeparator;
 
-    private boolean doubleSpaceFirstSuggestion;
-    private LinearLayout suggestionsView;
+    private final boolean doubleSpaceFirstSuggestion;
+    private final LinearLayout suggestionsView;
     private SuggestionRunnable suggestionRunnable;
     private LinearLayout.LayoutParams suggestionViewParams;
     private SuggestionsManager.Suggestion lastFirst;
 
-    private TerminalManager mTerminalAdapter;
+    private final TerminalManager mTerminalAdapter;
 
-    private View.OnClickListener clickListener = v -> {
+    private final View.OnClickListener clickListener = v -> {
         Suggestion suggestion = (Suggestion) v.getTag(R.id.suggestion_id);
         clickSuggestion(suggestion);
     };
 
-    private MainPack pack;
+    private final MainPack pack;
     private StoppableThread lastSuggestionThread;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
-    private RemoverRunnable removeAllSuggestions;
+    private final RemoverRunnable removeAllSuggestions;
 
-    private int[] spaces;
+    private final int[] spaces;
 
     int[] counts, noInputCounts;
 
-    private Pattern rmQuotes = Pattern.compile("['\"]");
+    private final Pattern rmQuotes = Pattern.compile("['\"]");
 
     int suggestionsPerCategory;
     float suggestionsDeadline;
 
-    private CustomComparator comparator;
+    private final CustomComparator comparator;
 
     private Algorithm algInstance;
     private AlgMap.Alg alg;
 
-    private int quickCompare;
+    private final int quickCompare;
 
     public SuggestionsManager(LinearLayout suggestionsView, MainPack mainPack, TerminalManager mTerminalAdapter) {
         this.suggestionsView = suggestionsView;
@@ -473,7 +476,7 @@ public class SuggestionsManager {
                     lastWord = lastInput;
                 } else {
                     before = lastInput.substring(0,lastSpace);
-                    lastWord = lastInput.substring(lastSpace + 1,lastInput.length());
+                    lastWord = lastInput.substring(lastSpace + 1);
                 }
 
                 final List<SuggestionsManager.Suggestion> suggestions;

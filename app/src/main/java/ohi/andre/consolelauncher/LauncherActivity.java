@@ -77,7 +77,7 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
     private boolean openKeyboardOnStart, canApplyTheme, backButtonEnabled;
 
     private Set<ReloadMessageCategory> categories;
-    private Runnable stopActivity = () -> {
+    private final Runnable stopActivity = () -> {
             dispose();
             finish();
 
@@ -93,7 +93,7 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
             startActivity(startMain);
     };
 
-    private Inputable in = new Inputable() {
+    private final Inputable in = new Inputable() {
 
         @Override
         public void in(String s) {
@@ -111,7 +111,7 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
         }
     };
 
-    private Outputable out = new Outputable() {
+    private final Outputable out = new Outputable() {
 
         private final int DELAY = 500;
 
@@ -307,7 +307,7 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
                     startService(notificationIntent);
                 } catch (NoClassDefFoundError er) {
                     Intent intent = new Intent(PrivateIOReceiver.ACTION_OUTPUT);
-                    intent.putExtra(PrivateIOReceiver.TEXT, getString(R.string.output_notification_error) + Tuils.SPACE + er.toString());
+                    intent.putExtra(PrivateIOReceiver.TEXT, getString(R.string.output_notification_error) + Tuils.SPACE + er);
                 }
             } else {
                 Tuils.sendOutput(Color.RED, this, R.string.notification_low_api);
@@ -520,7 +520,7 @@ public class LauncherActivity extends AppCompatActivity implements Reloadable {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if(permissions.length > 0 && permissions[0].equals(Manifest.permission.READ_CONTACTS) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(new Intent(ContactManager.ACTION_REFRESH));
         }

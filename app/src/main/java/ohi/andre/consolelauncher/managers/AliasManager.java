@@ -37,15 +37,16 @@ public class AliasManager {
     public static final String PATH = "alias.txt";
 
     private List<Alias> aliases;
-    private String paramSeparator, aliasLabelFormat;
-    private boolean replaceAllMarkers;
+    private final String paramSeparator;
+    private final String aliasLabelFormat;
+    private final boolean replaceAllMarkers;
 
-    private Context context;
+    private final Context context;
 
-    private String paramMarker;
-    private Pattern parameterPattern;
+    private final String paramMarker;
+    private final Pattern parameterPattern;
 
-    private BroadcastReceiver receiver;
+    private final BroadcastReceiver receiver;
 
     public AliasManager(Context c) {
         this.context = c;
@@ -117,7 +118,7 @@ public class AliasManager {
 
 //    this prevents some errors related to the % sign
     private final String SECURITY_REPLACEMENT = "{#@";
-    private Pattern securityPattern = Pattern.compile(Pattern.quote(SECURITY_REPLACEMENT));
+    private final Pattern securityPattern = Pattern.compile(Pattern.quote(SECURITY_REPLACEMENT));
 
     public String format(String aliasValue, String params) {
         params = params.trim();

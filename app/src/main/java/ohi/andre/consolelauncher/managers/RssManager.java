@@ -76,7 +76,7 @@ public class RssManager implements XMLPrefsElement {
 
     private final String PUBDATE_CHILD = "pubDate", ENTRY_CHILD = "item", LINK_CHILD = "link", HREF_ATTRIBUTE = "href";
 
-    private SimpleDateFormat defaultRSSDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+    private final SimpleDateFormat defaultRSSDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 
     private static XMLPrefsList values;
 
@@ -110,23 +110,24 @@ public class RssManager implements XMLPrefsElement {
 
     private boolean includeRssDefault, showDownloadMessage, click;
 
-    private Context context;
-    private Handler handler;
+    private final Context context;
+    private final Handler handler;
 
-    private File root, rssIndexFile;
+    private final File root;
+    private final File rssIndexFile;
 
     private List<Rss> feeds;
     private List<XMLPrefsManager.IdValue> formats;
     private List<CmdableRegex> cmdRegexes;
 
-    private OkHttpClient client;
+    private final OkHttpClient client;
 
     //    those will obscure the tag and its content
     private Pattern[] hideTagPatterns;
 
     private Pattern urlPattern, idPattern, bPattern, kbPattern, mbPattern, gbPattern;
 
-    private ConnectivityManager connectivityManager;
+    private final ConnectivityManager connectivityManager;
 
     public RssManager(Context context, OkHttpClient client) {
         instance = this;
@@ -385,7 +386,7 @@ public class RssManager implements XMLPrefsElement {
     }
 
     public String removeFormat(int id) {
-        String output = XMLPrefsManager.removeNode(rssIndexFile, FORMAT_LABEL, new String[] {ID_ATTRIBUTE}, new String[] {String.valueOf(id)});;
+        String output = XMLPrefsManager.removeNode(rssIndexFile, FORMAT_LABEL, new String[] {ID_ATTRIBUTE}, new String[] {String.valueOf(id)});
         if(output == null) {
             return null;
         } else {
@@ -598,7 +599,7 @@ public class RssManager implements XMLPrefsElement {
 
 //    base methods
 
-    private Runnable updateRunnable = new Runnable() {
+    private final Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
             for(Rss feed : feeds) {

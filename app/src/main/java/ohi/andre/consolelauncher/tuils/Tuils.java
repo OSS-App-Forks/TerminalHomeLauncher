@@ -347,7 +347,7 @@ public class Tuils {
     public static long download(InputStream in, File file) throws Exception {
         OutputStream out = new FileOutputStream(file, false);
 
-        byte data[] = new byte[1024];
+        byte[] data = new byte[1024];
 
         long bytes = 0;
 
@@ -742,10 +742,10 @@ public class Tuils {
         Tuils.log(g.getChildCount());
         for (int c = 0; c < g.getChildCount(); c++) deepView(g.getChildAt(c));
 
-        Tuils.log("end of parents of: " + v.toString());
+        Tuils.log("end of parents of: " + v);
     }
 
-    private static View.OnClickListener deepClickListener = v -> Tuils.log(v.toString());
+    private static final View.OnClickListener deepClickListener = v -> Tuils.log(v.toString());
 
     public static void deepClickView(View v) {
         v.setOnClickListener(deepClickListener);
@@ -903,7 +903,7 @@ public class Tuils {
     public static final int KILO = 3;
     public static final int BYTE = 4;
 
-    private static long total = -1;
+    private static final long total = -1;
 
     public static double freeRam(ActivityManager mgr, MemoryInfo info) {
         mgr.getMemoryInfo(info);
@@ -948,7 +948,7 @@ public class Tuils {
         for (Enumeration<String> iter = df.entries(); iter.hasMoreElements(); ) {
             String className = iter.nextElement();
             if (className.contains(packageName) && !className.contains("$")) {
-                classes.add(className.substring(className.lastIndexOf(".") + 1, className.length()));
+                classes.add(className.substring(className.lastIndexOf(".") + 1));
             }
         }
 
@@ -1142,7 +1142,7 @@ public class Tuils {
         if (o instanceof Object[] && o2 instanceof Object[]) {
             Log.e("andre", Arrays.toString((Object[]) o) + " -- " + Arrays.toString((Object[]) o2));
         } else {
-            Log.e("andre", String.valueOf(o) + " -- " + String.valueOf(o2));
+            Log.e("andre", o + " -- " + o2);
         }
     }
 
@@ -1169,7 +1169,7 @@ public class Tuils {
             if (o instanceof Object[] && o2 instanceof Object[]) {
                 to.write((Arrays.toString((Object[]) o) + " -- " + Arrays.toString((Object[]) o2)).getBytes());
             } else {
-                to.write((String.valueOf(o) + " -- " + String.valueOf(o2)).getBytes());
+                to.write((o + " -- " + o2).getBytes());
             }
         } catch (Exception e) {
             Tuils.log(e);
@@ -1193,7 +1193,7 @@ public class Tuils {
         try {
             RandomAccessFile f = new RandomAccessFile(new File(Tuils.getFolder(), "crash.txt"), "rw");
             f.seek(0);
-            f.write((new Date().toString() + Tuils.NEWLINE + Tuils.NEWLINE).getBytes());
+            f.write((new Date() + Tuils.NEWLINE + Tuils.NEWLINE).getBytes());
             OutputStream is = Channels.newOutputStream(f.getChannel());
             is.write(s.getBytes());
             f.write((Tuils.NEWLINE + Tuils.NEWLINE).getBytes());

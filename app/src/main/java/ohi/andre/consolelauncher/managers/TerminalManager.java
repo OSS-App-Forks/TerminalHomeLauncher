@@ -61,20 +61,20 @@ public class TerminalManager {
 
     private long lastEnter;
 
-    private String prefix;
-    private String suPrefix;
+    private final String prefix;
+    private final String suPrefix;
 
-    private ScrollView mScrollView;
-    private TextView mTerminalView;
-    private EditText mInputView;
+    private final ScrollView mScrollView;
+    private final TextView mTerminalView;
+    private final EditText mInputView;
 
-    private TextView mPrefix;
+    private final TextView mPrefix;
     private boolean suMode;
 
-    private List<String> cmdList = new ArrayList<>(CMD_LIST_SIZE);
+    private final List<String> cmdList = new ArrayList<>(CMD_LIST_SIZE);
     private int howBack = -1;
 
-    private Runnable mScrollRunnable = new Runnable() {
+    private final Runnable mScrollRunnable = new Runnable() {
         @Override
         public void run() {
             mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
@@ -82,14 +82,16 @@ public class TerminalManager {
         }
     };
 
-    private MainPack mainPack;
+    private final MainPack mainPack;
 
     private boolean defaultHint = true;
 
     private int clearCmdsCount= 0;
 
-    private int clearAfterCmds, clearAfterMs, maxLines;
-    private Runnable clearRunnable = new Runnable() {
+    private final int clearAfterCmds;
+    private final int clearAfterMs;
+    private final int maxLines;
+    private final Runnable clearRunnable = new Runnable() {
 
         @Override
         public void run() {
@@ -98,14 +100,17 @@ public class TerminalManager {
         }
     };
 
-    private String inputFormat, outputFormat;
-    private int inputColor, outputColor;
+    private final String inputFormat;
+    private final String outputFormat;
+    private final int inputColor;
+    private final int outputColor;
 
-    private boolean clickCommands, longClickCommands;
+    private final boolean clickCommands;
+    private final boolean longClickCommands;
 
     public Context mContext;
 
-    private CommandExecuter executer;
+    private final CommandExecuter executer;
 
     public TerminalManager(final TextView terminalView, EditText inputView, TextView prefixView, ImageView submitView, final ImageView backView, ImageButton nextView, ImageButton deleteView,
                            ImageButton pasteView, final Context context, MainPack mainPack, CommandExecuter executer) {

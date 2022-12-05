@@ -65,19 +65,19 @@ public class AppsManager implements XMLPrefsElement {
 
     public static final String PATH = "apps.xml";
     private final String NAME = "APPS";
-    private File file;
+    private final File file;
 
     private final String SHOW_ATTRIBUTE = "show", APPS_ATTRIBUTE = "apps", BGCOLOR_ATTRIBUTE = "bgColor", FORECOLOR_ATTRIBUTE = "foreColor";
     private static final String APPS_SEPARATOR = ";";
 
-    private Context context;
+    private final Context context;
 
     private AppsHolder appsHolder;
     private List<LaunchInfo> hiddenApps;
 
     private final String PREFS = "apps";
-    private SharedPreferences preferences;
-    private SharedPreferences.Editor editor;
+    private final SharedPreferences preferences;
+    private final SharedPreferences.Editor editor;
 
     public static XMLPrefsElement instance = null;
 
@@ -85,8 +85,10 @@ public class AppsManager implements XMLPrefsElement {
 
     public List<Group> groups;
 
-    private Pattern pp, pl;
-    private String appInstalledFormat, appUninstalledFormat;
+    private final Pattern pp;
+    private final Pattern pl;
+    private final String appInstalledFormat;
+    private final String appUninstalledFormat;
     int appInstalledColor, appUninstalledColor;
 
     @Override
@@ -109,7 +111,7 @@ public class AppsManager implements XMLPrefsElement {
         return prefsList;
     }
 
-    private BroadcastReceiver appsBroadcast = new BroadcastReceiver() {
+    private final BroadcastReceiver appsBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -1111,12 +1113,10 @@ public class AppsManager implements XMLPrefsElement {
             String[] split2 = app.split(COMPONENT_SEPARATOR);
 
             if(split2.length == 1) {
-                if(componentName.getPackageName().equals(split2[0])) return true;
+                return componentName.getPackageName().equals(split2[0]);
             } else {
-                if(componentName.getPackageName().equals(split2[0]) && componentName.getClassName().equals(split2[1])) return true;
+                return componentName.getPackageName().equals(split2[0]) && componentName.getClassName().equals(split2[1]);
             }
-
-            return false;
         }
 
         public static ComponentName componentInfo(String app) {
@@ -1198,13 +1198,13 @@ public class AppsManager implements XMLPrefsElement {
 
         final int MOST_USED = 10, NULL = 11, USER_DEFINIED = 12;
 
-        private List<LaunchInfo> infos;
-        private XMLPrefsList values;
+        private final List<LaunchInfo> infos;
+        private final XMLPrefsList values;
 
         private SuggestedAppMgr suggestedAppMgr;
 
         private class SuggestedAppMgr {
-            private List<SuggestedApp> suggested;
+            private final List<SuggestedApp> suggested;
             private int lastWriteable = -1;
 
             public SuggestedAppMgr(XMLPrefsList values, List<LaunchInfo> apps) {

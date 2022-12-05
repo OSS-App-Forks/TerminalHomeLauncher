@@ -224,7 +224,7 @@ public class MusicManager2 implements MediaController.MediaPlayerControl {
         loader.start();
     }
 
-    private ServiceConnection musicConnection = new ServiceConnection(){
+    private final ServiceConnection musicConnection = new ServiceConnection(){
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {

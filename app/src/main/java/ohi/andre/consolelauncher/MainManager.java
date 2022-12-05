@@ -70,7 +70,7 @@ public class MainManager {
     public static String CMD = "cmd", NEED_WRITE_INPUT = "writeInput", ALIAS_NAME = "aliasName", PARCELABLE = "parcelable", CMD_COUNT = "cmdCount", MUSIC_SERVICE = "musicService";
 
     private RedirectCommand redirect;
-    private Redirectator redirectator = new Redirectator() {
+    private final Redirectator redirectator = new Redirectator() {
         @Override
         public void prepareRedirection(RedirectCommand cmd) {
             redirect = cmd;
@@ -101,40 +101,40 @@ public class MainManager {
 
     private final String COMMANDS_PKG = "ohi.andre.consolelauncher.commands.main.raw";
 
-    private CmdTrigger[] triggers = new CmdTrigger[] {
+    private final CmdTrigger[] triggers = new CmdTrigger[] {
             new GroupTrigger(),
             new AliasTrigger(),
             new TuiCommandTrigger(),
             new AppTrigger(),
             new ShellCommandTrigger()
     };
-    private MainPack mainPack;
+    private final MainPack mainPack;
 
-    private LauncherActivity mContext;
+    private final LauncherActivity mContext;
 
-    private boolean showAliasValue;
-    private boolean showAppHistory;
-    private int aliasContentColor;
+    private final boolean showAliasValue;
+    private final boolean showAppHistory;
+    private final int aliasContentColor;
 
-    private String multipleCmdSeparator;
+    private final String multipleCmdSeparator;
 
     public static Shell.Interactive interactive;
 
-    private AliasManager aliasManager;
-    private RssManager rssManager;
-    private AppsManager appsManager;
+    private final AliasManager aliasManager;
+    private final RssManager rssManager;
+    private final AppsManager appsManager;
     private ContactManager contactManager;
-    private MusicManager2 musicManager2;
-    private ThemeManager themeManager;
-    private HTMLExtractManager htmlExtractManager;
+    private final MusicManager2 musicManager2;
+    private final ThemeManager themeManager;
+    private final HTMLExtractManager htmlExtractManager;
 
     MessagesManager messagesManager;
 
-    private BroadcastReceiver receiver;
+    private final BroadcastReceiver receiver;
 
     public static int commandCount = 0;
 
-    private boolean keeperServiceRunning;
+    private final boolean keeperServiceRunning;
 
     protected MainManager(LauncherActivity c) {
         mContext = c;
@@ -420,7 +420,7 @@ public class MainManager {
                 outputColor = XMLPrefsManager.getColor(Theme.output_color);
             }
 
-            String a = new String(appFormat);
+            String a = appFormat;
             a = pa.matcher(a).replaceAll(Matcher.quoteReplacement(intent.getComponent().getClassName()));
             a = pp.matcher(a).replaceAll(Matcher.quoteReplacement(intent.getComponent().getPackageName()));
             a = pl.matcher(a).replaceAll(Matcher.quoteReplacement(i.publicLabel));
@@ -447,7 +447,7 @@ public class MainManager {
 
         @Override
         public boolean trigger(MainPack info, String input) {
-            String alias[] = aliasManager.getAlias(input, true);
+            String[] alias = aliasManager.getAlias(input, true);
 
             String aliasValue = alias[0];
             if (alias[0] == null) {

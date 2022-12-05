@@ -28,8 +28,9 @@ public class LongClickableSpan extends ClickableSpan {
 
     public static int longPressVibrateDuration = -1;
 
-    private Object clickO, longClickO;
-    private String longIntentKey;
+    private final Object clickO;
+    private final Object longClickO;
+    private final String longIntentKey;
 
     private static boolean set = false, showMenu;
     private static boolean showExcludeApp, showExcludeNotification, showReply;

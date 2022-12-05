@@ -105,7 +105,7 @@ public class AlgMap {
         float compare(Algorithm alg, String s1, String s2);
     }
     
-    public static enum DistAlg implements Alg {
+    public enum DistAlg implements Alg {
         /**
          * Check {@link LongestCommonSubsequence}
          */
@@ -187,7 +187,7 @@ public class AlgMap {
         }
     }
     
-    public static enum NormDistAlg implements Alg {
+    public enum NormDistAlg implements Alg {
         /**
          * Check {@link Cosine}
          */
@@ -312,7 +312,7 @@ public class AlgMap {
         }
     }
     
-    public static enum NormSimAlg implements Alg {
+    public enum NormSimAlg implements Alg {
         /**
          * Check {@link Cosine}
          */
@@ -412,7 +412,7 @@ public class AlgMap {
         }
     }
     
-    public static enum MetricDistAlg implements Alg {
+    public enum MetricDistAlg implements Alg {
         /**
          * {@link Damerau}
          */

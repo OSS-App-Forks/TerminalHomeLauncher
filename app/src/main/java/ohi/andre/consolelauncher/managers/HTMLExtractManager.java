@@ -73,10 +73,12 @@ public class HTMLExtractManager {
 
     public static String PATH = "htmlextract.xml", NAME = "HTMLEXTRACT";
 
-    private List<StoreableValue> xpaths, jsons, formats;
+    private final List<StoreableValue> xpaths;
+    private final List<StoreableValue> jsons;
+    private final List<StoreableValue> formats;
 
-    private OkHttpClient client;
-    private BroadcastReceiver receiver;
+    private final OkHttpClient client;
+    private final BroadcastReceiver receiver;
 
     public static int broadcastCount;
 
@@ -687,7 +689,7 @@ public class HTMLExtractManager {
         int before;
         do {
             before = original.length();
-            original = TextUtils.replace(original, new String[] {Tuils.patternNewline.pattern()}, new CharSequence[] {Tuils.NEWLINE});;
+            original = TextUtils.replace(original, new String[] {Tuils.patternNewline.pattern()}, new CharSequence[] {Tuils.NEWLINE});
         } while (original.length() < before);
 
         return original;
@@ -766,7 +768,7 @@ public class HTMLExtractManager {
         public enum Type {
             xpath,
             json,
-            format;
+            format
         }
 
         int id;

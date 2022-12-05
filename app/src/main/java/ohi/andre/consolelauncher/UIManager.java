@@ -121,12 +121,12 @@ public class UIManager implements OnTouchListener {
 
     private DevicePolicyManager policy;
     private ComponentName component;
-    private GestureDetectorCompat gestureDetector;
+    private final GestureDetectorCompat gestureDetector;
 
     SharedPreferences preferences;
 
-    private InputMethodManager imm;
-    private TerminalManager mTerminalAdapter;
+    private final InputMethodManager imm;
+    private final TerminalManager mTerminalAdapter;
 
     int mediumPercentage, lowPercentage;
     String batteryFormat;
@@ -137,16 +137,16 @@ public class UIManager implements OnTouchListener {
     //    never access this directly, use getLabelView
     private TextView[] labelViews = new TextView[Label.values().length];
 
-    private float[] labelIndexes = new float[labelViews.length];
-    private int[] labelSizes = new int[labelViews.length];
-    private CharSequence[] labelTexts = new CharSequence[labelViews.length];
+    private final float[] labelIndexes = new float[labelViews.length];
+    private final int[] labelSizes = new int[labelViews.length];
+    private final CharSequence[] labelTexts = new CharSequence[labelViews.length];
 
     private TextView getLabelView(Label l) {
         return labelViews[(int) labelIndexes[l.ordinal()]];
     }
 
     private int notesMaxLines;
-    private NotesManager notesManager;
+    private final NotesManager notesManager;
     private NotesRunnable notesRunnable;
     private class NotesRunnable implements Runnable {
 
@@ -162,9 +162,9 @@ public class UIManager implements OnTouchListener {
                 handler.postDelayed(this, updateTime);
             }
         }
-    };
+    }
 
-    private BatteryUpdate batteryUpdate;
+    private final BatteryUpdate batteryUpdate;
     private class BatteryUpdate implements OnBatteryUpdate {
 
 //        %(charging:not charging)
@@ -244,7 +244,7 @@ public class UIManager implements OnTouchListener {
             charging = false;
             update(-1);
         }
-    };
+    }
 
     private StorageRunnable storageRunnable;
     private class StorageRunnable implements Runnable {
@@ -347,7 +347,7 @@ public class UIManager implements OnTouchListener {
 
             handler.postDelayed(this, STORAGE_DELAY);
         }
-    };
+    }
 
     private TimeRunnable timeRunnable;
     private class TimeRunnable implements Runnable {
@@ -363,7 +363,7 @@ public class UIManager implements OnTouchListener {
             updateText(Label.time, TimeManager.instance.getCharSequence(mContext, labelSizes[Label.time.ordinal()], "%t0"));
             handler.postDelayed(this, TIME_DELAY);
         }
-    };
+    }
 
     private ActivityManager.MemoryInfo memory;
     private ActivityManager activityManager;
@@ -429,7 +429,7 @@ public class UIManager implements OnTouchListener {
 
             handler.postDelayed(this, RAM_DELAY);
         }
-    };
+    }
 
     private NetworkRunnable networkRunnable;
     private class NetworkRunnable implements Runnable {
@@ -775,16 +775,16 @@ public class UIManager implements OnTouchListener {
 
     private SuggestionsManager suggestionsManager;
 
-    private TextView terminalView;
+    private final TextView terminalView;
 
-    private String doubleTapCmd;
-    private boolean lockOnDbTap;
+    private final String doubleTapCmd;
+    private final boolean lockOnDbTap;
 
-    private BroadcastReceiver receiver;
+    private final BroadcastReceiver receiver;
 
     public MainPack pack;
 
-    private boolean clearOnLock;
+    private final boolean clearOnLock;
 
     protected UIManager(final Context context, final ViewGroup rootView, MainPack mainPack, boolean canApplyTheme, CommandExecuter executer) {
 
@@ -911,16 +911,6 @@ public class UIManager implements OnTouchListener {
             rootView.setBackgroundColor(XMLPrefsManager.getColor(Theme.bg_color));
         } else {
             rootView.setBackgroundColor(XMLPrefsManager.getColor(Theme.overlay_color));
-        }
-
-//        scrolllllll
-        if(XMLPrefsManager.getBoolean(Behavior.auto_scroll)) {
-            rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-                int heightDiff = rootView.getRootView().getHeight() - rootView.getHeight();
-                if (heightDiff > Tuils.dpToPx(context, 200)) { // if more than 200 dp, it's probably a keyboard...
-                    if(mTerminalAdapter != null) mTerminalAdapter.scrollToEnd();
-                }
-            });
         }
 
         clearOnLock = XMLPrefsManager.getBoolean(Behavior.clear_on_lock);
@@ -1358,6 +1348,16 @@ public class UIManager implements OnTouchListener {
 
         mTerminalAdapter = new TerminalManager(terminalView, inputView, prefixView, submitView, backView, nextView, deleteView, pasteView, context, mainPack, executer);
 
+        // scrolllllll
+        if(XMLPrefsManager.getBoolean(Behavior.auto_scroll)) {
+            rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+                int heightDiff = rootView.getRootView().getHeight() - rootView.getHeight();
+                if (heightDiff > Tuils.dpToPx(context, 200)) { // if more than 200 dp, it's probably a keyboard...
+                    mTerminalAdapter.scrollToEnd();
+                }
+            });
+        }
+
         if (XMLPrefsManager.getBoolean(Suggestions.show_suggestions)) {
             HorizontalScrollView sv = (HorizontalScrollView) rootView.findViewById(R.id.suggestions_container);
             sv.setFocusable(false);
@@ -1416,7 +1416,7 @@ public class UIManager implements OnTouchListener {
         return is;
     }
 
-    private static Pattern sbPattern = Pattern.compile("[\\[\\]\\s]");
+    private static final Pattern sbPattern = Pattern.compile("[\\[\\]\\s]");
     private static String removeSquareBrackets(String s) {
         return sbPattern.matcher(s).replaceAll(Tuils.EMPTYSTRING);
     }
@@ -1605,7 +1605,10 @@ public class UIManager implements OnTouchListener {
 
     private int unlockColor, unlockTimeOrder;
 
-    private int unlockTimes, unlockHour, unlockMinute, cycleDuration = (int) A_DAY;
+    private int unlockTimes;
+    private int unlockHour;
+    private int unlockMinute;
+    private final int cycleDuration = (int) A_DAY;
     private long lastUnlockTime = -1, nextUnlockCycleRestart;
     private String unlockFormat, notAvailableText, unlockTimeDivider;
 
@@ -1695,7 +1698,7 @@ public class UIManager implements OnTouchListener {
     String whenPattern = "%w";
 
     private void invalidateUnlockText() {
-        String cp = new String(unlockFormat);
+        String cp = unlockFormat;
 
         cp = unlockCount.matcher(cp).replaceAll(String.valueOf(unlockTimes));
         cp = Tuils.patternNewline.matcher(cp).replaceAll(Tuils.NEWLINE);

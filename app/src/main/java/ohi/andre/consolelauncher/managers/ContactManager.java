@@ -32,10 +32,10 @@ public class ContactManager {
 
     public static String ACTION_REFRESH = BuildConfig.APPLICATION_ID + ".refresh_contacts";
 
-    private Context context;
+    private final Context context;
     private List<Contact> contacts;
 
-    private BroadcastReceiver receiver;
+    private final BroadcastReceiver receiver;
 
     public ContactManager(Context context) {
         this.context = context;
@@ -214,7 +214,7 @@ public class ContactManager {
         mCursor.moveToNext();
 
         about[NAME] = mCursor.getString(mCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-        about[NUMBERS] = new String(Tuils.EMPTYSTRING);
+        about[NUMBERS] = Tuils.EMPTYSTRING;
 
         int timesContacted = -1;
         long lastContacted = Long.MAX_VALUE;
@@ -234,7 +234,7 @@ public class ContactManager {
             long difference = System.currentTimeMillis() - lastContacted;
             long sc = difference / 1000;
             if(sc < 60) {
-                about[LAST_CONTACTED] = "sec: " + String.valueOf(lastContacted);
+                about[LAST_CONTACTED] = "sec: " + lastContacted;
             } else {
                 int ms = (int) (sc / 60);
                 sc = ms % 60;
