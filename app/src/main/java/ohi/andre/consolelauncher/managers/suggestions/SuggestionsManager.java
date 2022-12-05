@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -563,6 +564,7 @@ public class SuggestionsManager {
         beforeLastSpace  = beforeLastSpace .trim();
         lastWord = lastWord.trim();
 
+        Log.e("VALUES", "'" + beforeLastSpace + "' '" + lastWord + "'");
 //        lastword = 0
         if (lastWord.length() == 0) {
 
@@ -1089,7 +1091,7 @@ public class SuggestionsManager {
             int counter = quickCompare(afterLastSpace, apps, suggestions, beforeLastSpace, canInsert, canClickToLaunch && clickToLaunch, Suggestion.TYPE_APP, canClickToLaunch && clickToLaunch);
             if(canInsert - counter <= 0) return;
 
-            AppsManager.LaunchInfo[] infos = CompareObjects.topMatchesWithDeadline(AppsManager.LaunchInfo.class, afterLastSpace, apps.size(), apps, canInsert - counter, suggestionsDeadline, SPLITTERS, algInstance, alg);
+            AppsManager.LaunchInfo[] infos = CompareObjects.topAppMatchesWithDeadline(AppsManager.LaunchInfo.class, afterLastSpace, apps.size(), apps, canInsert - counter, suggestionsDeadline, SPLITTERS, algInstance, alg);
             for(AppsManager.LaunchInfo i : infos) {
                 if(i == null) break;
 
